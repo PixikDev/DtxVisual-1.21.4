@@ -12,15 +12,6 @@ base {
 }
 
 repositories {
-    // Prefer FirstDark for its group
-    exclusiveContent {
-        forRepository {
-            maven { url "https://maven.firstdark.dev/releases" }
-        }
-        filter {
-            includeGroup "dev.firstdark.discordrpc"
-        }
-    }
     mavenCentral()
     maven { url "https://jitpack.io" }
     maven { url "https://maven.meteordev.org/releases" }
@@ -35,7 +26,6 @@ dependencies {
     
     implementation(shadow("dev.redstones.mediaplayerinfo:media-player-info:0.1.0"))
     implementation("com.google.code.gson:gson:2.10.1")
-    implementation("dev.firstdark.discordrpc:discord-rpc:1.0.3")
     include implementation("meteordevelopment:orbit:0.2.3") 
     compileOnly("org.projectlombok:lombok:1.18.38")
     annotationProcessor("org.projectlombok:lombok:1.18.38")
