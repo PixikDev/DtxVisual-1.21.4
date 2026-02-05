@@ -62,9 +62,7 @@ public class ModuleManager implements Wrapper {
                 new ShiftTap(),
                 new Trails(),
                 new HitBubbles(),
-                new HitColor(),
-                new DiscordRPCModule(),
-                new Cape()
+                new HitColor()
         );
 
         for (Module module : modules) {

@@ -61,16 +61,9 @@ public class    ThemeManager {
 
     public Theme[] getAvailableThemes() {
         return new Theme[]{
-                new LightTheme(),
                 new TwilightGradientTheme(),
                 new EmeraldGlowTheme(),
-                new AmethystFadeTheme(),
-                new SunsetBlazeTheme(),
-                new OceanBreezeTheme(),
-                new AuroraBorealisTheme(),
-                new CyberNeonTheme(),
-                new LavaCoreTheme(),
-                new RGBTheme()
+                new SunsetBlazeTheme()
         };
     }
 

@@ -33,10 +33,10 @@ public class HudManager implements Wrapper {
     @Setter private HudElement currentDragging;
     private final List<HudElement> hudElements = new ArrayList<>();
     protected final ListSetting elements = new ListSetting("setting.layout",
-            new BooleanSetting("Watermark", true),
-            new BooleanSetting("TargetHud", true),
+        //    new BooleanSetting("Watermark", true),
+         //   new BooleanSetting("TargetHud", true),
             new BooleanSetting("Potions", true),
-            new BooleanSetting("ArmorHUD", true),
+          //  new BooleanSetting("ArmorHUD", true),
             new BooleanSetting("Hotbar", true)
     );
     @Setter private Window window;
@@ -45,10 +45,10 @@ public class HudManager implements Wrapper {
         DtxVisual.getInstance().getEventHandler().subscribe(this);
 
         addElements(
-                new Watermark(),
-                new TargetHud(),
+          //      new Watermark(),
+            //    new TargetHud(),
                 new Potions(),
-                new ArmorHUD(),
+          //      new ArmorHUD(),
                 new HotbarHUD()
         );
 
