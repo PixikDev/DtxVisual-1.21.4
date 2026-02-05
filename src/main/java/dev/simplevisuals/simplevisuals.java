@@ -2,7 +2,6 @@ package dev.simplevisuals;
 
 
 import dev.simplevisuals.client.managers.*;
-import dev.simplevisuals.client.ui.mainmenu.MainMenu;
 import dev.simplevisuals.client.util.Wrapper;
 import meteordevelopment.orbit.EventBus;
 import meteordevelopment.orbit.IEventBus;
@@ -34,7 +33,6 @@ public class  simplevisuals implements ModInitializer, Wrapper {
     private ClickGui clickGui;
     private HudManager hudManager;
     private dev.simplevisuals.client.managers.AltManager altManager;
-    private MainMenu mainmenu;
     private dev.simplevisuals.client.ui.hud.impl.WaypointOverlay waypointOverlay;
 
     public static Logger LOGGER = LogManager.getLogger(simplevisuals.class);
@@ -69,7 +67,6 @@ public class  simplevisuals implements ModInitializer, Wrapper {
         autoSaveManager = new AutoSaveManager();
         clickGui = new ClickGui();
         hudManager = new HudManager();
-        mainmenu = new MainMenu();
 
         // Always-on waypoint overlay
         waypointOverlay = new dev.simplevisuals.client.ui.hud.impl.WaypointOverlay();
@@ -78,12 +75,7 @@ public class  simplevisuals implements ModInitializer, Wrapper {
         // Загружаем автоматически сохраненную конфигурацию
         autoSaveManager.loadAutoSave();
 
-        // Регистрация события для замены TitleScreen на MainMenu
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.currentScreen instanceof TitleScreen && !(client.currentScreen instanceof MainMenu)) {
-                client.setScreen(mainmenu);
-            }
-        });
+        // Используем стандартное главное меню Minecraft (кастомное отключено)
 
         LOGGER.info("[simplevisuals] Successfully initialized for {} ms.", System.currentTimeMillis() - initTime);
     }
