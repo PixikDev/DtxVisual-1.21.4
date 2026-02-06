@@ -42,7 +42,7 @@ public class ModuleManager implements Wrapper {
                 new HitSound(),
                 new AutoRespawn(),
                 new CustomHitBox(),
-                new NameProtect(),
+               // new NameProtect(),
                 new ChinaHat(),
                 new PvpHelper(),
                 new JumpCircle(),
