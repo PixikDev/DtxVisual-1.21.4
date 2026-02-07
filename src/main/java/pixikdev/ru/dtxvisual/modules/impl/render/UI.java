@@ -15,7 +15,7 @@ public class UI extends Module {
 
 
     public UI() {
-        super("UI", Category.Render, I18n.translate("module.ui.description"));
+        super("ClickGui", Category.Render, I18n.translate("module.ui.description"));
         setBind(new Bind(GLFW.GLFW_KEY_RIGHT_SHIFT, false));
 
     }

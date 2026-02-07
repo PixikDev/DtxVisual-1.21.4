@@ -32,7 +32,7 @@ public class ModuleManager implements Wrapper {
         addModules(
                 new NoRender(),
                 new Fullbright(),
-                new Crosshair(),
+              //  new Crosshair(),
                 new ViewModel(),
                 new TargetEsp(),
                 new AutoSprint(),
@@ -84,9 +84,7 @@ public class ModuleManager implements Wrapper {
 
     @EventHandler
     public void onKey(EventKey e) {
-        // Do not toggle modules while any GUI screen is open
         if (mc.currentScreen != null) return;
-        // Filter invalid key
         if (e.getKey() < 0) return;
         for (Module module : modules) {
             if (module.getBind().isMouse()) continue;
@@ -106,7 +104,6 @@ public class ModuleManager implements Wrapper {
 
     @EventHandler
     public void onMouse(EventMouse e) {
-        // Do not toggle modules while any GUI screen is open
         if (mc.currentScreen != null) return;
         if (e.getButton() < 0) return;
         for (Module module : modules) {
