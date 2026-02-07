@@ -23,8 +23,7 @@ public abstract class MinecraftClientMixin implements Wrapper {
         EventTick event = new EventTick();
         DtxVisual.getInstance().getEventHandler().post(event);
         Counter.updateFPS();
-        
-        // Периодическая очистка HitDetectionManager (каждые 20 тиков = 1 секунда)
+
         tickCounter++;
         if (tickCounter >= 20) {
             HitDetectionManager.getInstance().cleanup();
@@ -34,12 +33,11 @@ public abstract class MinecraftClientMixin implements Wrapper {
 
     @Inject(method = "getWindowTitle", at = @At("HEAD"), cancellable = true)
     public void updateWindowTitle(CallbackInfoReturnable<String> cir) {
-        cir.setReturnValue("DtxVisual 1.0 - 1.21.4");
+        cir.setReturnValue("DtxVisual 1.1 - 1.21.4");
     }
 
     @Inject(method = "stop", at = @At("HEAD"))
     private void onStop(CallbackInfo ci) {
-        // Публикуем событие выключения игры для автосохранения конфигурации
         DtxVisual.getInstance().getEventHandler().post(new EventGameShutdown());
     }
 }

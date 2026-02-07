@@ -62,7 +62,6 @@ public class HudManager implements Wrapper {
                 }
             } catch (Exception ignored) {}
 
-            // Subscribe HUD elements to the event bus so they can render and handle input
             try {
                 DtxVisual.getInstance().getEventHandler().subscribe(element);
             } catch (Throwable ignored) {}
@@ -98,14 +97,12 @@ public class HudManager implements Wrapper {
             }
 
             if (e.getButton() == 1) {
-                // If right-click is over any HUD element area, let the element handle opening its own settings
                 for (HudElement element : hudElements) {
                     if (MathUtils.isHovered(element.getX(), element.getY(), element.getWidth(), element.getHeight(), mouseX(), mouseY())) {
                         return;
                     }
                 }
 
-                // Otherwise, open the global elements window
                 for (HudElement element : hudElements) {
                     if (element.getWindow() == null) continue;
                     if (element.getSettings().size() == 1) return;
