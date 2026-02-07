@@ -32,7 +32,7 @@ public class ModuleManager implements Wrapper {
         addModules(
                 new NoRender(),
                 new Fullbright(),
-              //  new Crosshair(),
+                new Crosshair(),
                 new ViewModel(),
                 new TargetEsp(),
                 new AutoSprint(),
