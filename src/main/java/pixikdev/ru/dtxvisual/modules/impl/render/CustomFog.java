@@ -25,12 +25,12 @@ public class CustomFog extends Module {
     }
 
     public Color getSkyColor() {
-        // Получаем актуальный цвет темы (включая градиентные темы)
+        
         return themeManager.getCurrentTheme().getBackgroundColor();
     }
 
     public Color getSkyColorSecondary() {
-        // Получаем актуальный цвет темы (включая градиентные темы)
+        
         return themeManager.getCurrentTheme().getSecondaryBackgroundColor();
     }
 

@@ -30,13 +30,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class HitBubbles extends Module implements ThemeManager.ThemeChangeListener {
 
-    // Настройки размера и времени жизни эффекта
+    
     private final NumberSetting size = new NumberSetting("setting.size", 0.5f, 0.2f, 2.0f, 0.05f);
     private final NumberSetting lifeTime = new NumberSetting("setting.lifeTime", 0.8f, 0.2f, 2.0f, 0.05f);
 
-    private static final long GROW_MS = 400L; // Длительность анимации роста
+    private static final long GROW_MS = 400L; 
 
-    private final Identifier bubbleTex = DtxVisual.id("textures/bubble.png"); // Текстура bubble.png
+    private final Identifier bubbleTex = DtxVisual.id("textures/bubble.png"); 
 
     private final List<HitCircle> hitCircles = new CopyOnWriteArrayList<>();
     private final ThemeManager themeManager;
@@ -69,10 +69,10 @@ public class HitBubbles extends Module implements ThemeManager.ThemeChangeListen
         if (!entity.isAlive()) return;
         if (!e.isEffectsAllowed()) return;
         
-        // Проверяем, можно ли обработать этот удар (не является ли он дубликатом)
+        
         if (!e.canProcess()) return;
 
-        // Создаем эффект в точке удара
+        
         Vec3d hitPos;
         HitResult ch = mc.crosshairTarget;
         if (ch != null && ch.getType() == HitResult.Type.ENTITY) {
@@ -89,14 +89,14 @@ public class HitBubbles extends Module implements ThemeManager.ThemeChangeListen
             hitPos = entity.getPos().add(0, entity.getHeight() / 2f, 0);
         }
 
-        // Вычисляем углы поворота к камере в момент удара
+        
         Vec3d cameraPos = mc.getEntityRenderDispatcher().camera.getPos();
         Vec3d toCamera = cameraPos.subtract(hitPos).normalize();
 
-        // Вычисляем yaw (горизонтальный поворот)
+        
         float yaw = (float) Math.toDegrees(Math.atan2(toCamera.z, toCamera.x));
 
-        // Вычисляем pitch (вертикальный поворот)
+        
         float pitch = (float) Math.toDegrees(Math.atan2(-toCamera.y, Math.sqrt(toCamera.x * toCamera.x + toCamera.z * toCamera.z)));
 
         hitCircles.add(new HitCircle(hitPos, (long) (lifeTime.getValue() * 1000), yaw, pitch));
@@ -107,7 +107,7 @@ public class HitBubbles extends Module implements ThemeManager.ThemeChangeListen
         if (fullNullCheck()) return;
 
         long now = System.currentTimeMillis();
-        // Удаляем круги, чье время жизни истекло
+        
         hitCircles.removeIf(c -> (now - c.spawnTime) > c.ttl);
 
         for (HitCircle c : hitCircles) {
@@ -116,18 +116,18 @@ public class HitBubbles extends Module implements ThemeManager.ThemeChangeListen
             c.grow.update(true);
             float growVal = c.grow.getValue();
 
-            // Вычисляем прозрачность с затуханием
+            
             float timeFade = (float) Math.pow(1.0 - (age / (float) c.ttl), 0.8);
             float alphaK = Math.max(0f, Math.min(1f, growVal * timeFade));
             int alpha = (int) (255 * alphaK);
             if (alpha <= 2) continue;
 
-            float r = size.getValue() * (0.6f + 0.4f * growVal); // Размер круга
+            float r = size.getValue() * (0.6f + 0.4f * growVal); 
             // Live theme color each frame for gradient themes
             Color themeColor = themeManager.getCurrentTheme().getBackgroundColor();
             Color drawColor = new Color(themeColor.getRed(), themeColor.getGreen(), themeColor.getBlue(), alpha);
 
-            // Настраиваем рендеринг
+            
             RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
             RenderSystem.setShaderTexture(0, bubbleTex);
             RenderSystem.enableBlend();
@@ -140,13 +140,13 @@ public class HitBubbles extends Module implements ThemeManager.ThemeChangeListen
             RenderSystem.depthFunc(GL11.GL_LEQUAL);
             RenderSystem.depthMask(false);
             
-            // Получаем позицию камеры
+            
             Vec3d cameraPos = mc.getEntityRenderDispatcher().camera.getPos();
             
-            // Создаем фиксированную ориентацию без billboard эффекта
-            // Используем простой квад с фиксированным поворотом
             
-            // Вычисляем векторы для фиксированной ориентации с учетом yaw и pitch
+            
+            
+            
             double yawRadians = Math.toRadians(c.rotationYaw);
             double pitchRadians = Math.toRadians(c.rotationPitch);
             
@@ -155,38 +155,38 @@ public class HitBubbles extends Module implements ThemeManager.ThemeChangeListen
             double cosPitch = Math.cos(pitchRadians);
             double sinPitch = Math.sin(pitchRadians);
             
-            // Создаем правильные векторы направления с учетом yaw и pitch
-            // Forward вектор (направление взгляда)
+            
+            
             Vec3d forward = new Vec3d(
                 cosYaw * cosPitch,
                 -sinPitch,
                 sinYaw * cosPitch
             ).normalize();
             
-            // Right вектор (перпендикулярно forward и up)
+            
             Vec3d worldUp = new Vec3d(0, 1, 0);
             Vec3d right = worldUp.crossProduct(forward).normalize();
             
-            // Up вектор (перпендикулярно forward и right)
+            
             Vec3d up = forward.crossProduct(right).normalize();
             
-            // Масштабируем векторы на размер
+            
             Vec3d scaledRight = right.multiply(r);
             Vec3d scaledUp = up.multiply(r);
             
-            // Вычисляем углы квада
+            
             Vec3d topLeft = c.origin.add(scaledUp).subtract(scaledRight);
             Vec3d topRight = c.origin.add(scaledUp).add(scaledRight);
             Vec3d bottomLeft = c.origin.subtract(scaledUp).subtract(scaledRight);
             Vec3d bottomRight = c.origin.subtract(scaledUp).add(scaledRight);
             
-            // Переводим в локальные координаты относительно камеры
+            
             topLeft = topLeft.subtract(cameraPos);
             topRight = topRight.subtract(cameraPos);
             bottomLeft = bottomLeft.subtract(cameraPos);
             bottomRight = bottomRight.subtract(cameraPos);
             
-            // Рендерим квад
+            
             Matrix4f matrix = e.getMatrices().peek().getPositionMatrix();
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder buffer = tessellator.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
@@ -196,7 +196,7 @@ public class HitBubbles extends Module implements ThemeManager.ThemeChangeListen
             float blue = drawColor.getBlue() / 255.0f;
             float alphaValue = drawColor.getAlpha() / 255.0f;
             
-            // Рендерим квад (против часовой стрелки)
+            
             buffer.vertex(matrix, (float) bottomLeft.x, (float) bottomLeft.y, (float) bottomLeft.z)
                     .texture(0.0f, 1.0f).color(red, green, blue, alphaValue);
             buffer.vertex(matrix, (float) bottomRight.x, (float) bottomRight.y, (float) bottomRight.z)
@@ -208,7 +208,7 @@ public class HitBubbles extends Module implements ThemeManager.ThemeChangeListen
             
             BufferRenderer.drawWithGlobalProgram(buffer.end());
             
-            // Восстанавливаем настройки рендеринга
+            
             RenderSystem.enableCull();
             RenderSystem.depthMask(true);
             RenderSystem.disableBlend();
@@ -225,12 +225,12 @@ public class HitBubbles extends Module implements ThemeManager.ThemeChangeListen
     }
 
     private static class HitCircle {
-        final Vec3d origin; // Точка удара
-        final long spawnTime; // Время появления
-        final long ttl; // Время жизни
-        final Animation grow; // Анимация роста
-        final float rotationYaw; // Угол поворота в момент создания
-        final float rotationPitch; // Угол наклона в момент создания
+        final Vec3d origin; 
+        final long spawnTime; 
+        final long ttl; 
+        final Animation grow; 
+        final float rotationYaw; 
+        final float rotationPitch; 
 
         HitCircle(Vec3d origin, long ttl, float rotationYaw, float rotationPitch) {
             this.origin = origin;

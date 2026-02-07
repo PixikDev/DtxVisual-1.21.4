@@ -56,7 +56,7 @@ public abstract class Module implements Wrapper {
     public void setToggled(boolean toggled) {
         if (toggled) onEnable();
         else onDisable();
-        // Планируем автосохранение после изменения состояния модуля
+        
         try {
             AutoSaveManager asm = DtxVisual.getInstance().getAutoSaveManager();
             if (asm != null) asm.scheduleAutoSave();

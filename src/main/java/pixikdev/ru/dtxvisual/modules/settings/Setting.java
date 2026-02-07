@@ -32,7 +32,7 @@ public abstract class Setting<Value> {
         DtxVisual.getInstance().getEventHandler().post(event);
         if (!event.isCancelled()) {
             this.value = value;
-            // Планируем автосохранение после успешного применения
+            
             try {
                 AutoSaveManager asm = DtxVisual.getInstance().getAutoSaveManager();
                 if (asm != null) asm.scheduleAutoSave();

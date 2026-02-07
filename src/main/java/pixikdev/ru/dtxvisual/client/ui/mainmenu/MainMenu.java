@@ -171,7 +171,7 @@ public class MainMenu extends Screen {
                 .build()
                 .render(matrix, 0f, 0f, 0f);
 
-        // Размытие и фон
+        
         new BlurBuilder()
                 .size(new SizeState(this.width, this.height))
                 .radius(new QuadRadiusState(0))
@@ -181,7 +181,7 @@ public class MainMenu extends Screen {
                 .build()
                 .render(matrix, 0f, 0f, 0f);
 
-        // Заголовок
+        
         String title = I18n.translate("dtxvisual.mainmenu.title");
         float titleX = this.width / 2f - Fonts.BOLD.getWidth(title, 10f) / 2f;
         float titleY = this.height / 2f - 75;
@@ -195,7 +195,7 @@ public class MainMenu extends Screen {
                 .build()
                 .render(matrix, titleX, titleY, 0f);
 
-        // Копирайт
+        
         String copyright = I18n.translate("dtxvisual.mainmenu.copyright");
         float copyrightX = this.width - Fonts.REGULAR.getWidth(copyright, 6f) - 5;
 
@@ -208,7 +208,7 @@ public class MainMenu extends Screen {
                 .build()
                 .render(matrix, copyrightX, this.height - 10, 0f);
 
-        // Кнопки
+        
         for (AnimatedButton btn : buttons) {
             btn.render(drawContext, mouseX, mouseY, delta, alpha);
         }
@@ -242,7 +242,7 @@ public class MainMenu extends Screen {
             float hoverProgress = hoverAnimation.getValue();
             Matrix4f matrix = drawContext.getMatrices().peek().getPositionMatrix();
 
-            // Кнопка
+            
             new RectangleBuilder()
                     .size(new SizeState(width, height))
                     .radius(new QuadRadiusState(8))
@@ -250,7 +250,7 @@ public class MainMenu extends Screen {
                     .build()
                     .render(matrix, x, y, 0f);
 
-            // Текст
+            
             Color base = new Color(220, 220, 240);
             Color hover = new Color(255, 255, 255);
             int r = (int) (base.getRed() + (hover.getRed() - base.getRed()) * hoverProgress);

@@ -74,7 +74,6 @@ public class ModuleManager implements Wrapper {
                     if (setting != null && !module.getSettings().contains(setting)) module.getSettings().add(setting);
                 }
             } catch (Exception ignored) {}
-            // Capture default binds after module fully constructed
             defaultBinds.put(module, module.getBind());
         }
     }

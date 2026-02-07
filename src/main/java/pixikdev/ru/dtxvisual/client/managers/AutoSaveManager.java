@@ -20,23 +20,23 @@ public class AutoSaveManager implements Wrapper {
     private static final Logger LOGGER = LogManager.getLogger(AutoSaveManager.class);
     private static final String AUTO_SAVE_CONFIG_NAME = "autocfg";
     
-    // Экстренное сохранение при аварийном завершении
+    
     private final java.util.concurrent.atomic.AtomicBoolean emergencySaving = new java.util.concurrent.atomic.AtomicBoolean(false);
     private Thread shutdownHook;
     
-    // Дебаунс-автосохранение при любых изменениях
+    
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "SV-AutoSaveScheduler"));
     private ScheduledFuture<?> pendingSave;
     private final Object saveLock = new Object();
     
-    // Блокируем автосохранение до завершения автозагрузки на старте
+    
     private volatile boolean allowAutoSave = false;
     
     public AutoSaveManager() {
-        // Подписываемся на события
+        
         DtxVisual.getInstance().getEventHandler().subscribe(this);
         
-        // Регистрируем обработчики экстренного завершения
+        
         registerShutdownHook();
         registerUncaughtExceptionHandler();
     }
@@ -45,7 +45,7 @@ public class AutoSaveManager implements Wrapper {
     public void onGameShutdown(EventGameShutdown event) {
         LOGGER.info("Автоматическое сохранение конфигурации...");
         
-        // Сохраняем текущую конфигурацию
+        
         ConfigManager configManager = DtxVisual.getInstance().getConfigManager();
         configManager.saveConfig(AUTO_SAVE_CONFIG_NAME).thenAccept(success -> {
             if (success) {
@@ -68,7 +68,7 @@ public class AutoSaveManager implements Wrapper {
      * Планирует автосохранение с небольшим дебаунсом, чтобы не писать файл слишком часто
      */
     public void scheduleAutoSave() {
-        if (!allowAutoSave) return; // блокируем автосохранения до завершения автозагрузки
+        if (!allowAutoSave) return; 
         synchronized (saveLock) {
             if (pendingSave != null && !pendingSave.isDone()) {
                 pendingSave.cancel(false);
@@ -94,7 +94,7 @@ public class AutoSaveManager implements Wrapper {
      * Загружает автоматически сохраненную конфигурацию при запуске
      */
     public void loadAutoSave() {
-        // Откладываем автозагрузку до первого тика рендер-потока, когда клиент полностью инициализирован
+        
         ClientTickEvents.END_CLIENT_TICK.register(new ClientTickEvents.EndTick() {
             private boolean attempted = false;
             @Override
@@ -111,11 +111,11 @@ public class AutoSaveManager implements Wrapper {
                         } else {
                             LOGGER.error("Ошибка при загрузке автоматически сохраненной конфигурации");
                         }
-                        // Разрешаем автосохранение после попытки загрузки
+                        
                         allowAutoSave = true;
                     });
                 } else {
-                    // Конфига нет — просто разрешаем автосохранение
+                    
                     allowAutoSave = true;
                 }
             }
@@ -148,7 +148,7 @@ public class AutoSaveManager implements Wrapper {
         }
     }
     
-    // ---- Экстренное сохранение ----
+    
     private void registerShutdownHook() {
         if (shutdownHook != null) return;
         shutdownHook = new Thread(() -> {
@@ -165,7 +165,7 @@ public class AutoSaveManager implements Wrapper {
         try {
             Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
                 LOGGER.error("Необработанное исключение в потоке {}: {}", thread.getName(), throwable.toString());
-                // Пытаемся сохранить конфиг синхронно перед падением
+                
                 emergencySave("Uncaught exception");
             });
         } catch (Throwable t) {
@@ -178,7 +178,7 @@ public class AutoSaveManager implements Wrapper {
         try {
             LOGGER.info("Экстренное сохранение конфигурации ({}).", reason);
             ConfigManager configManager = DtxVisual.getInstance().getConfigManager();
-            // Блокирующее сохранение, чтобы успеть до завершения процесса
+            
             configManager.saveConfig(AUTO_SAVE_CONFIG_NAME).join();
             LOGGER.info("Экстренное сохранение завершено");
         } catch (Throwable t) {

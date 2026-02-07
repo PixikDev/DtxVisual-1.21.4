@@ -46,12 +46,12 @@ public abstract class KeyboardMixin {
 		BetterMinecraft module = DtxVisual.getInstance().getModuleManager().getModule(BetterMinecraft.class);
 		if (module == null || !module.isToggled()) return;
 
-		// F5: сброс анимации отдаления при переключении
+		
 		if (key == GLFW.GLFW_KEY_F5 && action == GLFW.GLFW_PRESS && module.smoothThirdPersonZoom.getValue()) {
 			module.getThirdPersonAnimation().reset();
 		}
 
-		// TAB: направление и сброс анимации открытия/закрытия
+		
 		if (key == GLFW.GLFW_KEY_TAB) {
 			if (action == GLFW.GLFW_PRESS && module.smoothTab.getValue()) {
 				module.setTabPressed(true);

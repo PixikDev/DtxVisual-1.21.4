@@ -121,7 +121,7 @@ public class ListComponent extends Component {
             float yOffset = height;
             float visibleH = (float) (setting.getValue().size() * 14f * Math.max(0f, Math.min(1f, openAnimation.getValue())));
             for (BooleanSetting s : setting.getValue()) {
-                if (yOffset >= height + visibleH) break; // не кликаем по невидимой части во время анимации
+                if (yOffset >= height + visibleH) break; 
                 if (MathUtils.isHovered(x, y + yOffset, width, 14f, (float) mouseX, (float) mouseY)) {
                     if (setting.isSingleSelect()) {
                         for (BooleanSetting all : setting.getValue()) all.setValue(false);

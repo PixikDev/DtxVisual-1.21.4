@@ -140,7 +140,7 @@ public class TargetHud extends HudElement implements ThemeManager.ThemeChangeLis
     }
 
     private Color getHitColor(LivingEntity entity, int alpha) {
-        return new Color(255, 255, 255, alpha); // стандартный цвет
+        return new Color(255, 255, 255, alpha); 
     }
 
     @Override

@@ -504,7 +504,7 @@ public class Predictions extends Module implements ThemeManager.ThemeChangeListe
                 // Theme color with smooth alpha fade towards the tail and gradient
                 float t = (float) i / (float) trajectory.size();
                 
-                // Создаем градиент между основным и вторичным цветом
+                
                 int r = (int) (currentColor.getRed() * (1.0f - t) + currentColorSecondary.getRed() * t);
                 int gg = (int) (currentColor.getGreen() * (1.0f - t) + currentColorSecondary.getGreen() * t);
                 int b = (int) (currentColor.getBlue() * (1.0f - t) + currentColorSecondary.getBlue() * t);

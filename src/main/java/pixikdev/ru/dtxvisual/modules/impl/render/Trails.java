@@ -45,7 +45,7 @@ public class Trails extends Module implements ThemeManager.ThemeChangeListener {
         try (var __ = Perf.scopeCpu("Trails.onRender3D")) {
             Render3D.prepare();
             float tickDelta = Render3D.getTickDelta();
-            // Получаем актуальный цвет темы (включая градиентные темы)
+            
             Color base = ThemeManager.getInstance().getCurrentTheme().getBackgroundColor();
             int baseR = base.getRed();
             int baseG = base.getGreen();

@@ -27,7 +27,7 @@ public class ModuleComponent extends Component {
     private boolean showBindModeMenu;
     private boolean renderExternally;
 
-    // координаты отображения текста бинда для хитбокса
+    
     private float bindTextX, bindTextY, bindTextW, bindTextH;
 
     @Getter private final List<Component> components = new ArrayList<>();
@@ -62,11 +62,11 @@ public class ModuleComponent extends Component {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         boolean hovered = MathUtils.isHovered(x, y, width, HEADER_HEIGHT, mouseX, mouseY);
-        // Показываем описание модуля сверху ClickGUI при ховере
+        
         if (hovered && mc.currentScreen instanceof ClickGui clickGui) {
             clickGui.setDescription(module.getDescription());
         }
-        // Ховер-анимация зависит только от наведения, не от состояния модуля
+        
         if (!hoverAnimInitialized) {
             hoverAnim.setDuration(0);
             hoverAnim.update(hovered);
@@ -75,7 +75,7 @@ public class ModuleComponent extends Component {
         } else {
             hoverAnim.update(hovered);
         }
-        // Обновляем анимацию переключателя только при фактической смене состояния модуля
+        
         boolean currentState = module.isToggled();
         if (!toggleAnimInitialized) {
             toggleAnim.setDuration(0);
@@ -95,7 +95,7 @@ public class ModuleComponent extends Component {
         openAnimation.update(open);
         bindMenuAnimation.update(showBindModeMenu);
 
-        // фон
+        
         Color base = new Color(67, 67, 67, (int) (120 * Math.max(0f, Math.min(1f, globalAlpha))));
         Color themeAccent = ThemeManager.getInstance().getCurrentTheme().getAccentColor();
         Color active = new Color(themeAccent.getRed(), themeAccent.getGreen(), themeAccent.getBlue(), 180);
@@ -113,36 +113,36 @@ public class ModuleComponent extends Component {
         Render2D.drawFont(context.getMatrices(), Fonts.BOLD.getFont(titleFontSize),
                 localizedModuleName, x + 8f, titleY, textColor);
 
-        // биндинг — вычисляем позицию и хитбокс
+        
         String bindText = "";
         if (binding) bindText = "Press key...";
         else if (module.getBind() != null && module.getBind().getKey() != -1)
             bindText = module.getBind().toString().replace("_", " ");
 
-        // маленький текст бинда снизу
+        
         float bindFontSize = 6f;
         bindTextW = bindText.isEmpty() ? 0f : Fonts.REGULAR.getWidth(bindText, bindFontSize);
         bindTextH = Fonts.REGULAR.getHeight(bindFontSize);
-        // координаты будут обновлены после вычисления totalHeight
-        // временно сбросим X/Y, чтобы не ломать хитбокс до отрисовки
+        
+        
         bindTextX = Float.NaN;
         bindTextY = Float.NaN;
 
-        // Синхронизация состояния ползунка без анимации при первом рендере,
-        // чтобы избежать ложного отображения статуса при открытии GUI
+        
+        
         if (!toggleAnimInitialized) {
             toggleAnim.setDuration(0);
             toggleAnim.update(module.isToggled());
-            // восстановить стандартную длительность анимации (200 мс по умолчанию)
+            
             toggleAnim.setDuration(200);
             toggleAnimInitialized = true;
         }
 
-                // переключатель (ползунок) состояния модуля, как у BooleanSetting
+                
         float switchW = 20f;
         float switchH = 10f;
-        float reservedRight = 0f; // фиксированное положение: без учёта текста бинда
-        float switchX = x + width - reservedRight - 24f; // 24f = ширина переключателя + отступ
+        float reservedRight = 0f; 
+        float switchX = x + width - reservedRight - 24f; 
         float switchY = y + (HEADER_HEIGHT - switchH) / 2f;
         Color accent = ThemeManager.getInstance().getCurrentTheme().getAccentColor();
         float progress = isToggleAnimating ? (float) toggleAnim.getValue() : (currentState ? 1f : 0f);
@@ -152,18 +152,18 @@ public class ModuleComponent extends Component {
                 switchW * (1f - progress), switchH, 3f, new Color(23, 23, 23, (int) (100 * Math.max(0f, Math.min(1f, globalAlpha)))));
         float thumbW = 8f;
         float thumbH = 8f;
-        // Увеличенный симметричный отступ 1.5f с обеих сторон
+        
         float padding = 1.5f;
         float thumbX = switchX + padding + (switchW - thumbW - 2f * padding) * progress;
         float thumbY = switchY + padding + (switchH - thumbH - 2f * padding) / 2f;
         Render2D.drawRoundedRect(context.getMatrices(), thumbX, thumbY, thumbW, thumbH, 3f, Color.WHITE);
 
-        // дочерние компоненты (без анимации раскрытия)
+        
         if (open && !renderExternally) {
             float childY = y + HEADER_HEIGHT;
             float visibleH = getChildrenFullHeight();
 
-            // клип ограничен рамкой модуля
+            
             context.enableScissor((int) x, (int) (y + HEADER_HEIGHT),
                     (int) (x + width), (int) (y + HEADER_HEIGHT + visibleH));
 
@@ -181,7 +181,7 @@ public class ModuleComponent extends Component {
             context.disableScissor();
         }
 
-        // теперь отрисуем маленький текст бинда снизу (после детей, чтобы не клипался)
+        
         if (!bindText.isEmpty()) {
             float totalHeightAfter = getHeight();
             bindTextX = x + 8f;
@@ -191,22 +191,22 @@ public class ModuleComponent extends Component {
                     new Color(200, 200, 200, (int) (180 * Math.max(0f, Math.min(1f, globalAlpha)))));
         }
 
-        // Контекстное меню режима бинда (мгновенное появление, без анимации масштаба/альфы)
+        
         if (showBindModeMenu) {
             float itemW = 80f;
-            float itemH = 15f; // увеличено с 12f до 15f
+            float itemH = 15f; 
 
-            // Позиционирование: рядом с текстом бинда и ВЫШЕ, чтобы не уходить за нижнюю границу
+            
             float desiredX = (Float.isNaN(bindTextX) ? (x + width - 90f) : (bindTextX + bindTextW + 6f));
             float menuX = Math.min(desiredX, x + width - itemW - 6f);
-            // Если нет места справа — прижать слева от текста бинда
+            
             if (!Float.isNaN(bindTextX) && menuX < bindTextX) {
                 float leftCandidate = bindTextX - itemW - 6f;
                 if (leftCandidate >= x + 6f) menuX = leftCandidate;
             }
             float menuYBase = (Float.isNaN(bindTextY) ? (y + HEADER_HEIGHT + 2f) : (bindTextY - (itemH * 2f + 7f) - 4f));
 
-            // Анимация появления: альфа и слайд-вверх
+            
             float a = (float) Math.max(0f, Math.min(1f, bindMenuAnimation.getValue()));
             float slideOffset = (1f - a) * 6f;
             float menuY = menuYBase + slideOffset;
@@ -238,7 +238,7 @@ public class ModuleComponent extends Component {
         boolean onHeader = MathUtils.isHovered(x, y, width, HEADER_HEIGHT, (float) mouseX, (float) mouseY);
         boolean onBindText = (!Float.isNaN(bindTextX)) && MathUtils.isHovered(bindTextX, bindTextY - 1f, bindTextW, bindTextH + 2f, (float) mouseX, (float) mouseY);
 
-        // клик по нижнему тексту бинда — открыть меню режима бинда
+        
         if (button == 0 && onBindText && !binding) {
             if (module.getBind() != null && !module.getBind().isEmpty()) {
                 showBindModeMenu = !showBindModeMenu;
@@ -247,22 +247,22 @@ public class ModuleComponent extends Component {
         }
 
         if (onHeader) {
-            if (button == 0 && !binding) { // ЛКМ — вкл/выкл
+            if (button == 0 && !binding) { 
                 module.toggle();
                 return;
-            } else if (button == 1 && !components.isEmpty() && !binding && !renderExternally) { // ПКМ — открыть/закрыть список
+            } else if (button == 1 && !components.isEmpty() && !binding && !renderExternally) { 
                 open = !open;
                 return;
-            } else if (button == 2 && !binding) { // СКМ — бинд
+            } else if (button == 2 && !binding) { 
                 binding = true;
                 return;
             }
         }
 
-        // клик по пунктам меню режима бинда
+        
         if (showBindModeMenu) {
             float itemW = 80f;
-            float itemH = 15f; // увеличено с 12f до 15f
+            float itemH = 15f; 
 
             float desiredX = (Float.isNaN(bindTextX) ? (x + width - 90f) : (bindTextX + bindTextW + 6f));
             float menuX = Math.min(desiredX, x + width - itemW - 6f);
@@ -282,12 +282,12 @@ public class ModuleComponent extends Component {
                 showBindModeMenu = false;
                 return;
             }
-            // клик снаружи — закрыть меню и поглотить событие
+            
             if (!MathUtils.isHovered(menuX, menuY, itemW, itemH * 2f + 7f, (float) mouseX, (float) mouseY)) {
                 showBindModeMenu = false;
                 return;
             }
-            // В любом случае при открытом меню — поглощаем событие
+            
             return;
         }
 
@@ -298,7 +298,7 @@ public class ModuleComponent extends Component {
 
     @Override
     public void mouseReleased(double mouseX, double mouseY, int button) {
-        // При открытом меню режима бинда — поглощаем отпускание, чтобы не передавалось детям
+        
         if (showBindModeMenu) return;
         if (open && !renderExternally) {
             for (Component component : components) component.mouseReleased(mouseX, mouseY, button);
@@ -309,9 +309,9 @@ public class ModuleComponent extends Component {
     public void keyPressed(int keyCode, int scanCode, int modifiers) {
         if (binding) {
             if (keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE || keyCode == org.lwjgl.glfw.GLFW.GLFW_KEY_DELETE) {
-                module.setBind(new Bind(-1, false)); // снять бинд
+                module.setBind(new Bind(-1, false)); 
             } else {
-                // сохраняем текущий режим при переназначении
+                
                 Bind.Mode mode = module.getBind() != null ? module.getBind().getMode() : Bind.Mode.TOGGLE;
                 module.setBind(new Bind(keyCode, false, mode));
             }
@@ -338,7 +338,7 @@ public class ModuleComponent extends Component {
         }
     }
 
-    // высота = только заголовок, если внешний рендер настроек активен
+    
     @Override
     public float getHeight() {
         if (renderExternally) return HEADER_HEIGHT;

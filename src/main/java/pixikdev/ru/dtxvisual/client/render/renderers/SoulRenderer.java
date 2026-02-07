@@ -44,7 +44,7 @@ public class SoulRenderer {
 
         var camera = mc.gameRenderer.getCamera();
 
-        // Если target null, используем fadeOrigin из TargetEsp
+        
         double entX, entY, entZ;
         float iAge;
         float height, radius;
@@ -57,8 +57,8 @@ public class SoulRenderer {
             height = target.getHeight();
             radius = target.getWidth();
         } else if (fadeOrigin != null) {
-            // Для fadeOrigin используем переданные координаты и размеры
-            // fadeOrigin уже содержит центр сущности, поэтому не нужно добавлять height/2
+            
+            
             entX = fadeOrigin.x;
             entY = fadeOrigin.y;
             entZ = fadeOrigin.z;
@@ -66,7 +66,7 @@ public class SoulRenderer {
             height = lastKnownHeight;
             radius = lastKnownWidth;
         } else {
-            return; // Нет ни target, ни fadeOrigin
+            return; 
         }
 
         double tPosX = entX - camera.getPos().x;
@@ -92,7 +92,7 @@ public class SoulRenderer {
 
         MatrixStack base = e.getMatrices();
         base.push();
-        // Для target добавляем смещение по Y, для fadeOrigin не добавляем (уже центр)
+        
         if (target != null) {
             base.translate(tPosX, tPosY + height * 0.5, tPosZ);
         } else {
@@ -106,7 +106,7 @@ public class SoulRenderer {
                 for (int i = 0; i <= particleDensity; i++) {
                     float iFloat = (float) i;
                     
-                    // Анимация исчезания частиц (от центра к краям)
+                    
                     float particleProgress = iFloat / (float) particleDensity;
                     float fadeMultiplier = Math.min(1.0f, Math.max(0.0f, animationValue - particleProgress));
                     if (fadeMultiplier <= 0) continue;
@@ -145,7 +145,7 @@ public class SoulRenderer {
             for (int i = 0; i <= particleDensity; i++) {
                 float iFloat = (float) i;
                 
-                // Анимация исчезания частиц (от центра к краям)
+                
                 float particleProgress = iFloat / (float) particleDensity;
                 float fadeMultiplier = Math.min(1.0f, Math.max(0.0f, animationValue - particleProgress));
                 if (fadeMultiplier <= 0) continue;

@@ -7,20 +7,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class    ThemeManager {
+public class ThemeManager {
     private static ThemeManager instance;
     private Theme currentTheme;
     private final List<ThemeChangeListener> listeners = new ArrayList<>();
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    // Private constructor for singleton
     private ThemeManager() {
-        // Default theme
         this.currentTheme = new LightTheme();
         startGradientUpdateTask();
     }
 
-    // Get singleton instance
     public static ThemeManager getInstance() {
         if (instance == null) {
             instance = new ThemeManager();
@@ -63,7 +60,17 @@ public class    ThemeManager {
         return new Theme[]{
                 new TwilightGradientTheme(),
                 new EmeraldGlowTheme(),
-                new SunsetBlazeTheme()
+                new SunsetBlazeTheme(),
+                new OceanBreezeTheme(),
+                new AuroraBorealisTheme(),
+                new CyberNeonTheme(),
+                new LavaCoreTheme(),
+                new RGBTheme(),
+                new CrystalRoseTheme(),
+                new ElectricLimeTheme(),
+                new GoldenSunsetTheme(),
+                new MysticPurpleTheme(),
+                new ArcticIceTheme()
         };
     }
 
@@ -72,7 +79,7 @@ public class    ThemeManager {
             if (currentTheme instanceof GradientTheme) {
                 notifyListeners();
             }
-        }, 0, 25, TimeUnit.MILLISECONDS); // Update every 50ms for gradient themes
+        }, 0, 25, TimeUnit.MILLISECONDS);
     }
 
     public interface Theme {
@@ -106,7 +113,7 @@ public class    ThemeManager {
         protected final Color[] borderColors;
         protected final Color[] accentColors;
         protected final Color[] secondaryBackgroundColors;
-        private static final long TRANSITION_DURATION = 1000; // Increased to 4000ms for slower transitions
+        private static final long TRANSITION_DURATION = 1000;
 
         protected GradientTheme(Color[] backgroundColors, Color[] borderColors,
                                 Color[] accentColors, Color[] secondaryBackgroundColors) {
@@ -121,7 +128,7 @@ public class    ThemeManager {
             float phase = (float) (currentTime % (TRANSITION_DURATION * backgroundColors.length)) / TRANSITION_DURATION;
             int index = (int) phase;
             float t = phase - index;
-            t = (float) (Math.sin(t * Math.PI / 2)); // Ease-in effect
+            t = (float) (Math.sin(t * Math.PI / 2));
             return t;
         }
 
@@ -162,12 +169,12 @@ public class    ThemeManager {
     public static class LightTheme implements Theme {
         @Override
         public Color getBackgroundColor() {
-            return new Color(255, 255, 255, 100); // Semi-transparent white
+            return new Color(255,255,255, 100);
         }
 
         @Override
         public Color getBorderColor() {
-            return new Color(255, 255, 255, 100); // Semi-transparent white
+            return new Color(255,255,255, 100);
         }
 
         @Override
@@ -177,12 +184,12 @@ public class    ThemeManager {
 
         @Override
         public Color getAccentColor() {
-            return new Color(255, 255, 255, 100); // White line under header
+            return new Color(255,255,255, 100);
         }
 
         @Override
         public Color getSecondaryBackgroundColor() {
-            return new Color(255, 255, 255, 100); // Slightly darker background for description
+            return new Color(255,255,255, 100);
         }
 
         @Override
@@ -194,27 +201,27 @@ public class    ThemeManager {
     public static class DarkTheme implements Theme {
         @Override
         public Color getBackgroundColor() {
-            return new Color(30, 30, 30, 175); // Dark gray
+            return new Color(30, 30, 30, 175);
         }
 
         @Override
         public Color getBorderColor() {
-            return new Color(200, 200, 200, 100); // Light gray
+            return new Color(200, 200, 200, 100);
         }
 
         @Override
         public Color getTextColor() {
-            return new Color(220, 220, 220); // Off-white
+            return new Color(220, 220, 220);
         }
 
         @Override
         public Color getAccentColor() {
-            return new Color(100, 100, 100, 100); // Darker accent
+            return new Color(100, 100, 100, 100);
         }
 
         @Override
         public Color getSecondaryBackgroundColor() {
-            return new Color(20, 20, 20, 200); // Darker secondary background
+            return new Color(20, 20, 20, 200);
         }
 
         @Override
@@ -227,28 +234,28 @@ public class    ThemeManager {
         public TwilightGradientTheme() {
             super(
                     new Color[]{
-                            new Color(80, 42, 195, 150),   // Deep navy
-                            new Color(156, 69, 211, 150),  // Purple dusk
-                            new Color(179, 103, 250, 150), // Light violet
-                            new Color(148, 36, 255, 150)    // Dark purple
+                            new Color(80, 42, 195, 150),
+                            new Color(156, 69, 211, 150),
+                            new Color(179, 103, 250, 150),
+                            new Color(148, 36, 255, 150)
                     },
                     new Color[]{
-                            new Color(80, 42, 195, 150),   // Deep navy
-                            new Color(156, 69, 211, 150),  // Purple dusk
-                            new Color(179, 103, 250, 150), // Light violet
-                            new Color(148, 36, 255, 150)    // Deeper purple
+                            new Color(80, 42, 195, 150),
+                            new Color(156, 69, 211, 150),
+                            new Color(179, 103, 250, 150),
+                            new Color(148, 36, 255, 150)
                     },
                     new Color[]{
-                            new Color(80, 42, 195, 150),   // Deep navy
-                            new Color(156, 69, 211, 150),  // Purple dusk
-                            new Color(179, 103, 250, 150), // Light violet
-                            new Color(148, 36, 255, 150)     // Deepest purple
+                            new Color(80, 42, 195, 150),
+                            new Color(156, 69, 211, 150),
+                            new Color(179, 103, 250, 150),
+                            new Color(148, 36, 255, 150)
                     },
                     new Color[]{
-                            new Color(80, 42, 195, 150),   // Deep navy
-                            new Color(156, 69, 211, 150),  // Purple dusk
-                            new Color(179, 103, 250, 150), // Light violet
-                            new Color(148, 36, 255, 150)    // Lighter purple
+                            new Color(80, 42, 195, 150),
+                            new Color(156, 69, 211, 150),
+                            new Color(179, 103, 250, 150),
+                            new Color(148, 36, 255, 150)
                     }
             );
         }
@@ -268,28 +275,28 @@ public class    ThemeManager {
         public EmeraldGlowTheme() {
             super(
                     new Color[]{
-                            new Color(0, 204, 160, 150),    // Deep emerald
-                            new Color(2, 204, 73, 150),   // Bright emerald
-                            new Color(15, 227, 0, 150),  // Light green
-                            new Color(0, 170, 31, 150)     // Forest emerald
+                            new Color(0, 204, 160, 150),
+                            new Color(2, 204, 73, 150),
+                            new Color(15, 227, 0, 150),
+                            new Color(0, 170, 31, 150)
                     },
                     new Color[]{
-                            new Color(0, 204, 160, 150),    // Deep emerald
-                            new Color(2, 204, 73, 150),   // Bright emerald
-                            new Color(15, 227, 0, 150),  // Light green
-                            new Color(0, 170, 31, 150)     // Darker forest emerald
+                            new Color(0, 204, 160, 150),
+                            new Color(2, 204, 73, 150),
+                            new Color(15, 227, 0, 150),
+                            new Color(0, 170, 31, 150)
                     },
                     new Color[]{
-                            new Color(0, 204, 160, 150),    // Deep emerald
-                            new Color(2, 204, 73, 150),   // Bright emerald
-                            new Color(15, 227, 0, 150),  // Light green
-                            new Color(0, 170, 31, 150)      // Deepest forest emerald
+                            new Color(0, 204, 160, 150),
+                            new Color(2, 204, 73, 150),
+                            new Color(15, 227, 0, 150),
+                            new Color(0, 170, 31, 150)
                     },
                     new Color[]{
-                            new Color(0, 204, 160, 150),    // Deep emerald
-                            new Color(2, 204, 73, 150),   // Bright emerald
-                            new Color(15, 227, 0, 150),  // Light green
-                            new Color(0, 170, 31, 150)   // Lighter forest emerald
+                            new Color(0, 204, 160, 150),
+                            new Color(2, 204, 73, 150),
+                            new Color(15, 227, 0, 150),
+                            new Color(0, 170, 31, 150)
                     }
             );
         }
@@ -305,73 +312,32 @@ public class    ThemeManager {
         }
     }
 
-    public static class AmethystFadeTheme extends GradientTheme {
-        public AmethystFadeTheme() {
-            super(
-                    new Color[]{
-                            new Color(100, 50, 150, 150),  // Deep amethyst
-                            new Color(150, 80, 200, 150),  // Bright amethyst
-                            new Color(180, 120, 220, 150), // Light amethyst
-                            new Color(80, 40, 120, 150)    // Dark amethyst
-                    },
-                    new Color[]{
-                            new Color(80, 40, 120, 150),   // Darker amethyst
-                            new Color(120, 64, 160, 150),  // Darker bright amethyst
-                            new Color(144, 96, 176, 150),  // Darker light amethyst
-                            new Color(64, 32, 96, 150)     // Darker dark amethyst
-                    },
-                    new Color[]{
-                            new Color(60, 30, 90, 150),    // Deepest amethyst
-                            new Color(90, 48, 120, 150),   // Deepest bright amethyst
-                            new Color(108, 72, 132, 150),  // Deepest light amethyst
-                            new Color(48, 24, 72, 150)     // Deepest dark amethyst
-                    },
-                    new Color[]{
-                            new Color(120, 70, 170, 150),  // Lighter amethyst
-                            new Color(170, 100, 220, 150), // Lighter bright amethyst
-                            new Color(200, 140, 240, 150), // Lighter light amethyst
-                            new Color(100, 60, 140, 150)   // Lighter dark amethyst
-                    }
-            );
-        }
-
-        @Override
-        public Color getTextColor() {
-            return Color.WHITE;
-        }
-
-        @Override
-        public String getName() {
-            return "Amethyst";
-        }
-    }
-
     public static class SunsetBlazeTheme extends GradientTheme {
         public SunsetBlazeTheme() {
             super(
                     new Color[]{
-                            new Color(200, 60, 20, 150),   // Deep sunset red
-                            new Color(220, 100, 40, 150),  // Bright orange
-                            new Color(240, 140, 60, 150),  // Light orange
-                            new Color(180, 40, 10, 150)    // Dark red-orange
+                            new Color(200, 60, 20, 150),
+                            new Color(220, 100, 40, 150),
+                            new Color(240, 140, 60, 150),
+                            new Color(180, 40, 10, 150)
                     },
                     new Color[]{
-                            new Color(160, 48, 16, 150),   // Darker sunset red
-                            new Color(176, 80, 32, 150),   // Darker bright orange
-                            new Color(192, 112, 48, 150),  // Darker light orange
-                            new Color(144, 32, 8, 150)     // Darker dark red-orange
+                            new Color(200, 60, 20, 150),
+                            new Color(220, 100, 40, 150),
+                            new Color(240, 140, 60, 150),
+                            new Color(180, 40, 10, 150)
                     },
                     new Color[]{
-                            new Color(120, 36, 12, 150),   // Deepest sunset red
-                            new Color(132, 60, 24, 150),   // Deepest bright orange
-                            new Color(144, 84, 36, 150),   // Deepest light orange
-                            new Color(108, 24, 6, 150)     // Deepest dark red-orange
+                            new Color(200, 60, 20, 150),
+                            new Color(220, 100, 40, 150),
+                            new Color(240, 140, 60, 150),
+                            new Color(180, 40, 10, 150)
                     },
                     new Color[]{
-                            new Color(220, 80, 40, 150),   // Lighter sunset red
-                            new Color(240, 120, 60, 150),  // Lighter bright orange
-                            new Color(255, 160, 80, 150),  // Lighter light orange
-                            new Color(200, 60, 20, 150)    // Lighter dark red-orange
+                            new Color(200, 60, 20, 150),
+                            new Color(220, 100, 40, 150),
+                            new Color(240, 140, 60, 150),
+                            new Color(180, 40, 10, 150)
                     }
             );
         }
@@ -391,28 +357,28 @@ public class    ThemeManager {
         public OceanBreezeTheme() {
             super(
                     new Color[]{
-                            new Color(20, 80, 120, 150),   // Deep ocean blue
-                            new Color(40, 120, 160, 150),  // Bright teal
-                            new Color(60, 160, 200, 150),  // Light aqua
-                            new Color(10, 60, 100, 150)    // Dark ocean blue
+                            new Color(20, 80, 120, 150),
+                            new Color(40, 120, 160, 150),
+                            new Color(60, 160, 200, 150),
+                            new Color(10, 60, 100, 150)
                     },
                     new Color[]{
-                            new Color(16, 64, 96, 150),    // Darker ocean blue
-                            new Color(32, 96, 128, 150),   // Darker bright teal
-                            new Color(48, 128, 160, 150),  // Darker light aqua
-                            new Color(8, 48, 80, 150)      // Darker dark ocean blue
+                            new Color(16, 64, 96, 150),
+                            new Color(32, 96, 128, 150),
+                            new Color(48, 128, 160, 150),
+                            new Color(8, 48, 80, 150)
                     },
                     new Color[]{
-                            new Color(12, 48, 72, 150),    // Deepest ocean blue
-                            new Color(24, 72, 96, 150),    // Deepest bright teal
-                            new Color(36, 96, 120, 150),   // Deepest light aqua
-                            new Color(6, 36, 60, 150)      // Deepest dark ocean blue
+                            new Color(16, 64, 96, 150),
+                            new Color(32, 96, 128, 150),
+                            new Color(48, 128, 160, 150),
+                            new Color(8, 48, 80, 150)
                     },
                     new Color[]{
-                            new Color(40, 100, 140, 150),  // Lighter ocean blue
-                            new Color(60, 140, 180, 150),  // Lighter bright teal
-                            new Color(80, 180, 220, 150),  // Lighter light aqua
-                            new Color(30, 80, 120, 150)    // Lighter dark ocean blue
+                            new Color(16, 64, 96, 150),
+                            new Color(32, 96, 128, 150),
+                            new Color(48, 128, 160, 150),
+                            new Color(8, 48, 80, 150)
                     }
             );
         }
@@ -427,32 +393,33 @@ public class    ThemeManager {
             return "Blue";
         }
     }
+
     public static class AuroraBorealisTheme extends GradientTheme {
         public AuroraBorealisTheme() {
             super(
                     new Color[]{
-                            new Color(10, 80, 60, 150),   // Deep teal
-                            new Color(40, 180, 120, 150), // Emerald green
-                            new Color(80, 220, 200, 150), // Aqua glow
-                            new Color(120, 100, 220, 150) // Violet edge
+                            new Color(10, 80, 60, 150),
+                            new Color(40, 180, 120, 150),
+                            new Color(80, 220, 200, 150),
+                            new Color(120, 100, 220, 150)
                     },
                     new Color[]{
-                            new Color(8, 64, 48, 150),    // Darker teal
-                            new Color(32, 144, 96, 150),  // Darker emerald
-                            new Color(64, 176, 160, 150), // Darker aqua
-                            new Color(96, 80, 176, 150)   // Darker violet
+                            new Color(8, 64, 48, 150),
+                            new Color(32, 144, 96, 150),
+                            new Color(64, 176, 160, 150),
+                            new Color(96, 80, 176, 150)
                     },
                     new Color[]{
-                            new Color(20, 120, 90, 150),  // Highlight teal
-                            new Color(60, 200, 140, 150), // Highlight emerald
-                            new Color(100, 240, 220, 150),// Highlight aqua
-                            new Color(150, 130, 255, 150) // Highlight violet
+                            new Color(20, 120, 90, 150),
+                            new Color(60, 200, 140, 150),
+                            new Color(100, 240, 220, 150),
+                            new Color(150, 130, 255, 150)
                     },
                     new Color[]{
-                            new Color(16, 100, 80, 150),  // Soft teal
-                            new Color(50, 170, 130, 150), // Soft emerald
-                            new Color(90, 210, 190, 150), // Soft aqua
-                            new Color(130, 115, 240, 150) // Soft violet
+                            new Color(16, 100, 80, 150),
+                            new Color(50, 170, 130, 150),
+                            new Color(90, 210, 190, 150),
+                            new Color(130, 115, 240, 150)
                     }
             );
         }
@@ -472,28 +439,28 @@ public class    ThemeManager {
         public CyberNeonTheme() {
             super(
                     new Color[]{
-                            new Color(0, 255, 200, 150),   // Neon cyan
-                            new Color(255, 0, 180, 150),   // Neon magenta
-                            new Color(0, 140, 255, 150),   // Electric blue
-                            new Color(255, 255, 0, 150)    // Neon yellow
+                            new Color(0, 255, 200, 150),
+                            new Color(255, 0, 180, 150),
+                            new Color(0, 140, 255, 150),
+                            new Color(255, 255, 0, 150)
                     },
                     new Color[]{
-                            new Color(0, 210, 165, 150),   // Darker neon cyan
-                            new Color(210, 0, 150, 150),   // Darker neon magenta
-                            new Color(0, 110, 210, 150),   // Darker electric blue
-                            new Color(210, 210, 0, 150)    // Darker neon yellow
+                            new Color(0, 210, 165, 150),
+                            new Color(210, 0, 150, 150),
+                            new Color(0, 110, 210, 150),
+                            new Color(210, 210, 0, 150)
                     },
                     new Color[]{
-                            new Color(50, 255, 220, 150),  // Accent cyan
-                            new Color(255, 50, 200, 150),  // Accent magenta
-                            new Color(50, 170, 255, 150),  // Accent blue
-                            new Color(255, 255, 50, 150)   // Accent yellow
+                            new Color(50, 255, 220, 150),
+                            new Color(255, 50, 200, 150),
+                            new Color(50, 170, 255, 150),
+                            new Color(255, 255, 50, 150)
                     },
                     new Color[]{
-                            new Color(0, 235, 190, 150),   // Secondary cyan
-                            new Color(235, 0, 170, 150),   // Secondary magenta
-                            new Color(0, 130, 235, 150),   // Secondary blue
-                            new Color(235, 235, 0, 150)    // Secondary yellow
+                            new Color(0, 235, 190, 150),
+                            new Color(235, 0, 170, 150),
+                            new Color(0, 130, 235, 150),
+                            new Color(235, 235, 0, 150)
                     }
             );
         }
@@ -513,28 +480,28 @@ public class    ThemeManager {
         public LavaCoreTheme() {
             super(
                     new Color[]{
-                            new Color(120, 0, 0, 150),     // Dark lava red
-                            new Color(200, 20, 0, 150),    // Hot red
-                            new Color(255, 90, 0, 150),    // Molten orange
-                            new Color(255, 180, 0, 150)    // Bright lava yellow
+                            new Color(120, 0, 0, 150),
+                            new Color(200, 20, 0, 150),
+                            new Color(255, 90, 0, 150),
+                            new Color(255, 180, 0, 150)
                     },
                     new Color[]{
-                            new Color(90, 0, 0, 150),      // Darker red
-                            new Color(160, 16, 0, 150),    // Darker hot red
-                            new Color(210, 75, 0, 150),    // Darker orange
-                            new Color(220, 150, 0, 150)    // Darker yellow
+                            new Color(90, 0, 0, 150),
+                            new Color(160, 16, 0, 150),
+                            new Color(210, 75, 0, 150),
+                            new Color(220, 150, 0, 150)
                     },
                     new Color[]{
-                            new Color(160, 10, 0, 150),    // Accent red
-                            new Color(230, 40, 0, 150),    // Accent hot red
-                            new Color(255, 120, 0, 150),   // Accent orange
-                            new Color(255, 210, 0, 150)    // Accent yellow
+                            new Color(160, 10, 0, 150),
+                            new Color(230, 40, 0, 150),
+                            new Color(255, 120, 0, 150),
+                            new Color(255, 210, 0, 150)
                     },
                     new Color[]{
-                            new Color(140, 5, 0, 150),     // Secondary red
-                            new Color(210, 30, 0, 150),    // Secondary hot red
-                            new Color(240, 100, 0, 150),   // Secondary orange
-                            new Color(245, 190, 0, 150)    // Secondary yellow
+                            new Color(140, 5, 0, 150),
+                            new Color(210, 30, 0, 150),
+                            new Color(240, 100, 0, 150),
+                            new Color(245, 190, 0, 150)
                     }
             );
         }
@@ -549,32 +516,33 @@ public class    ThemeManager {
             return "Lava";
         }
     }
+
     public static class RGBTheme extends GradientTheme {
         public RGBTheme() {
             super(
                     new Color[]{
-                            new Color(255, 0, 0, 150),   // Deep ocean blue
-                            new Color(17, 255, 0, 150),  // Bright teal
-                            new Color(0, 5, 255, 150),  // Light aqua
-                            new Color(255, 0, 241, 150)    // Dark ocean blue
+                            new Color(255, 0, 0, 150),
+                            new Color(17, 255, 0, 150),
+                            new Color(0, 5, 255, 150),
+                            new Color(255, 0, 241, 150)
                     },
                     new Color[]{
-                            new Color(255, 0, 0, 150),   // Deep ocean blue
-                            new Color(17, 255, 0, 150),  // Bright teal
-                            new Color(0, 5, 255, 150),  // Light aqua
-                            new Color(255, 0, 241, 150)      // Darker dark ocean blue
+                            new Color(255, 0, 0, 150),
+                            new Color(17, 255, 0, 150),
+                            new Color(0, 5, 255, 150),
+                            new Color(255, 0, 241, 150)
                     },
                     new Color[]{
-                            new Color(255, 0, 0, 150),   // Deep ocean blue
-                            new Color(17, 255, 0, 150),  // Bright teal
-                            new Color(0, 5, 255, 150),  // Light aqua
-                            new Color(255, 0, 241, 150)      // Deepest dark ocean blue
+                            new Color(255, 0, 0, 150),
+                            new Color(17, 255, 0, 150),
+                            new Color(0, 5, 255, 150),
+                            new Color(255, 0, 241, 150)
                     },
                     new Color[]{
-                            new Color(255, 0, 0, 150),   // Deep ocean blue
-                            new Color(17, 255, 0, 150),  // Bright teal
-                            new Color(0, 5, 255, 150),  // Light aqua
-                            new Color(255, 0, 241, 150)    // Lighter dark ocean blue
+                            new Color(255, 0, 0, 150),
+                            new Color(17, 255, 0, 150),
+                            new Color(0, 5, 255, 150),
+                            new Color(255, 0, 241, 150)
                     }
             );
         }
@@ -587,6 +555,211 @@ public class    ThemeManager {
         @Override
         public String getName() {
             return "RGB";
+        }
+    }
+
+    public static class CrystalRoseTheme extends GradientTheme {
+        public CrystalRoseTheme() {
+            super(
+                    new Color[]{
+                            new Color(255, 100, 150, 180),
+                            new Color(255, 150, 200, 180),
+                            new Color(255, 200, 220, 180),
+                            new Color(255, 220, 240, 180)
+                    },
+                    new Color[]{
+                            new Color(255, 100, 150, 180),
+                            new Color(255, 150, 200, 180),
+                            new Color(255, 200, 220, 180),
+                            new Color(255, 220, 240, 180)
+                    },
+                    new Color[]{
+                            new Color(255, 100, 150, 180),
+                            new Color(255, 150, 200, 180),
+                            new Color(255, 200, 220, 180),
+                            new Color(255, 220, 240, 180)
+                    },
+                    new Color[]{
+                            new Color(255, 120, 170, 180),
+                            new Color(255, 170, 220, 180),
+                            new Color(255, 220, 240, 180),
+                            new Color(255, 240, 250, 180)
+                    }
+            );
+        }
+
+        @Override
+        public Color getTextColor() {
+            return Color.WHITE;
+        }
+
+        @Override
+        public String getName() {
+            return "Crystal Rose";
+        }
+    }
+
+    public static class ElectricLimeTheme extends GradientTheme {
+        public ElectricLimeTheme() {
+            super(
+                    new Color[]{
+                            new Color(100, 255, 100, 200),
+                            new Color(150, 255, 150, 200),
+                            new Color(200, 255, 200, 200),
+                            new Color(180, 255, 180, 200)
+                    },
+                    new Color[]{
+                            new Color(100, 255, 100, 200),
+                            new Color(150, 255, 150, 200),
+                            new Color(200, 255, 200, 200),
+                            new Color(180, 255, 180, 200)
+                    },
+                    new Color[]{
+                            new Color(100, 255, 100, 200),
+                            new Color(150, 255, 150, 200),
+                            new Color(200, 255, 200, 200),
+                            new Color(180, 255, 180, 200)
+                    },
+                    new Color[]{
+                            new Color(120, 255, 120, 200),
+                            new Color(170, 255, 170, 200),
+                            new Color(220, 255, 220, 200),
+                            new Color(200, 255, 200, 200)
+                    }
+            );
+        }
+
+        @Override
+        public Color getTextColor() {
+            return Color.BLACK;
+        }
+
+        @Override
+        public String getName() {
+            return "Electric Lime";
+        }
+    }
+
+    public static class GoldenSunsetTheme extends GradientTheme {
+        public GoldenSunsetTheme() {
+            super(
+                    new Color[]{
+                            new Color(255, 230, 100, 200),
+                            new Color(255, 200, 50, 200),
+                            new Color(255, 180, 100, 200),
+                            new Color(255, 220, 150, 200)
+                    },
+                    new Color[]{
+                            new Color(255, 230, 100, 200),
+                            new Color(255, 200, 50, 200),
+                            new Color(255, 180, 100, 200),
+                            new Color(255, 220, 150, 200)
+                    },
+                    new Color[]{
+                            new Color(255, 230, 100, 200),
+                            new Color(255, 200, 50, 200),
+                            new Color(255, 180, 100, 200),
+                            new Color(255, 220, 150, 200)
+                    },
+                    new Color[]{
+                            new Color(255, 240, 120, 200),
+                            new Color(255, 220, 80, 200),
+                            new Color(255, 200, 120, 200),
+                            new Color(255, 230, 170, 200)
+                    }
+            );
+        }
+
+        @Override
+        public Color getTextColor() {
+            return Color.BLACK;
+        }
+
+        @Override
+        public String getName() {
+            return "Golden Sunset";
+        }
+    }
+
+    public static class MysticPurpleTheme extends GradientTheme {
+        public MysticPurpleTheme() {
+            super(
+                    new Color[]{
+                            new Color(200, 100, 255, 200),
+                            new Color(220, 150, 255, 200),
+                            new Color(240, 180, 255, 200),
+                            new Color(255, 200, 240, 200)
+                    },
+                    new Color[]{
+                            new Color(200, 100, 255, 200),
+                            new Color(220, 150, 255, 200),
+                            new Color(240, 180, 255, 200),
+                            new Color(255, 200, 240, 200)
+                    },
+                    new Color[]{
+                            new Color(200, 100, 255, 200),
+                            new Color(220, 150, 255, 200),
+                            new Color(240, 180, 255, 200),
+                            new Color(255, 200, 240, 200)
+                    },
+                    new Color[]{
+                            new Color(210, 120, 255, 200),
+                            new Color(230, 170, 255, 200),
+                            new Color(250, 200, 255, 200),
+                            new Color(255, 220, 245, 200)
+                    }
+            );
+        }
+
+        @Override
+        public Color getTextColor() {
+            return Color.WHITE;
+        }
+
+        @Override
+        public String getName() {
+            return "Mystic Purple";
+        }
+    }
+
+    public static class ArcticIceTheme extends GradientTheme {
+        public ArcticIceTheme() {
+            super(
+                    new Color[]{
+                            new Color(100, 200, 255, 200),
+                            new Color(150, 220, 255, 200),
+                            new Color(200, 240, 255, 200),
+                            new Color(220, 250, 255, 200)
+                    },
+                    new Color[]{
+                            new Color(100, 200, 255, 200),
+                            new Color(150, 220, 255, 200),
+                            new Color(200, 240, 255, 200),
+                            new Color(220, 250, 255, 200)
+                    },
+                    new Color[]{
+                            new Color(100, 200, 255, 200),
+                            new Color(150, 220, 255, 200),
+                            new Color(200, 240, 255, 200),
+                            new Color(220, 250, 255, 200)
+                    },
+                    new Color[]{
+                            new Color(150, 230, 255, 200),
+                            new Color(180, 250, 255, 200),
+                            new Color(220, 255, 255, 200),
+                            new Color(240, 255, 255, 200)
+                    }
+            );
+        }
+
+        @Override
+        public Color getTextColor() {
+            return Color.BLACK;
+        }
+
+        @Override
+        public String getName() {
+            return "Arctic Ice";
         }
     }
 }

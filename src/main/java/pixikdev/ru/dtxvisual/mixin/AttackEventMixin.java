@@ -17,7 +17,7 @@ public abstract class AttackEventMixin {
     @Inject(method = "attack", at = @At("HEAD"), cancellable = true)
     private void onAttack(Entity target, CallbackInfo ci) {
         PlayerEntity self = (PlayerEntity) (Object) this;
-        // Отсечка фантомных ударов через hurttime цели (мягкий порог)
+        
         if (target instanceof LivingEntity living && living.hurtTime > 2) {
             ci.cancel();
             return;
@@ -29,12 +29,12 @@ public abstract class AttackEventMixin {
             ci.cancel();
             return;
         }
-        // Если два удара почти одновременно (<=0.05ms), блокируем визуальные эффекты для второго
+        
         boolean duplicateByTime = !HitDetectionManager.getInstance().canProcessHit(self, target);
         if (duplicateByTime) {
             event.setEffectsAllowed(false);
         }
-        // Регистрируем удар один раз, если не был отменен
+        
         HitDetectionManager.getInstance().registerHit(self, target);
     }
 } 

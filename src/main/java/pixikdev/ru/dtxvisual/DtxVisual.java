@@ -69,10 +69,10 @@ public class DtxVisual implements ModInitializer, Wrapper {
         waypointOverlay = new WaypointOverlay();
         eventHandler.subscribe(waypointOverlay);
 
-        // Загружаем автоматически сохраненную конфигурацию
+        
         autoSaveManager.loadAutoSave();
 
-        // Используем стандартное главное меню Minecraft (кастомное отключено)
+        
 
         LOGGER.info("[dtxvisual] Successfully initialized for {} ms.", System.currentTimeMillis() - initTime);
     }

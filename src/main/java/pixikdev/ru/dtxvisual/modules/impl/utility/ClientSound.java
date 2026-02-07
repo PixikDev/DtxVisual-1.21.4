@@ -34,13 +34,13 @@ public class ClientSound extends Module {
     public String getEnableSoundId() {
         if (pair2.getValue()) return "dtxvisual:enable2";
         if (legacy.getValue()) return "dtxvisual:enable";
-        return "dtxvisual:enable1"; // по умолчанию пара 1
+        return "dtxvisual:enable1"; 
     }
 
     public String getDisableSoundId() {
         if (pair2.getValue()) return "dtxvisual:disable2";
         if (legacy.getValue()) return "dtxvisual:disable";
-        return "dtxvisual:disable1"; // по умолчанию пара 1
+        return "dtxvisual:disable1"; 
     }
 
     public NumberSetting getVolume() {

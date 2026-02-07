@@ -27,7 +27,7 @@ public class FriendHelper extends Module {
         getSettings().add(noFriendDamage);
     }
 
-    // Добавлено: публичный геттер, чтобы другие части кода (миксины) могли корректно узнать состояние
+    
     public BooleanSetting getNoFriendDamage() {
         return noFriendDamage;
     }

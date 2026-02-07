@@ -103,7 +103,7 @@ public class ChinaHat extends Module implements ThemeManager.ThemeChangeListener
         float baseToCrown = player.isInSneakingPose() ? 0.305f : 0.265f;
         float pitchRad = (float) Math.toRadians(MathHelper.clamp(headPitch, -90.0f, 90.0f));
         float cosPitch = MathHelper.clamp((float) Math.cos(pitchRad), 0.0f, 1.0f);
-        float tiltFactor = 1.0f - cosPitch; // 0 at 0°, 1 at ±90°
+        float tiltFactor = 1.0f - cosPitch; 
         float upMul = headPitch < 0.0f ? 1.6f : 1.0f; // stronger adjustment when looking up
 
         float clearance = 0.03f * cosPitch + (headPitch < 0.0f ? 0.008f * tiltFactor : 0.0f);

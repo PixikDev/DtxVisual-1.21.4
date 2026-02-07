@@ -27,11 +27,9 @@ import java.util.List;
 
 public class BlockOverlay extends Module {
 
-    // Настройки обводки
     private final NumberSetting lineWidth = new NumberSetting("setting.lineWidth", 2.0f, 1.0f, 5.0f, 0.1f);
     private final NumberSetting alpha = new NumberSetting("setting.alpha", 150, 0, 255, 1);
 
-    // Настройки заливки
     private final BooleanSetting fill = new BooleanSetting("setting.fill", false, () -> true);
     private final NumberSetting fillAlpha = new NumberSetting("setting.fillAlpha", 50, 0, 255, 1, () -> fill.getValue());
 
@@ -54,28 +52,23 @@ public class BlockOverlay extends Module {
     public void onRender3D(EventRender3D.Game event) {
         if (fullNullCheck()) return;
         try (var __ = Perf.scopeCpu("BlockOverlay.onRender3D")) {
-            // Обычная логика для блока под курсором
             HitResult hitResult = mc.crosshairTarget;
             if (hitResult == null || hitResult.getType() != HitResult.Type.BLOCK) return;
 
             BlockHitResult blockHitResult = (BlockHitResult) hitResult;
             BlockPos blockPos = blockHitResult.getBlockPos();
 
-            // Проверяем расстояние с учетом tickdelta для плавного движения
             Vec3d playerPos = mc.player.getLerpedPos(event.getTickDelta());
             Vec3d blockCenter = Vec3d.ofCenter(blockPos);
             double distance = playerPos.distanceTo(blockCenter);
 
             if (distance > 100.0f) return;
 
-            // Получаем цвета из темы для градиента
             Color overlayColor = getOverlayColor();
             Color overlayColorSecondary = getOverlayColorSecondary();
 
-            // Получаем фактическую форму контура блока и рендерим каждый хитбокс
             VoxelShape shape = mc.world.getBlockState(blockPos).getOutlineShape(mc.world, blockPos);
 
-            // Если форма пустая, используем полный блок как запасной вариант
             if (shape.isEmpty()) {
                 Box blockBox = new Box(blockPos).expand(0.001);
                 renderBlockOverlayDirect(event.getMatrices(), blockBox, overlayColor, overlayColorSecondary, event.getTickDelta());
@@ -96,7 +89,7 @@ public class BlockOverlay extends Module {
 
 
     private Color getOverlayColor() {
-        // Получаем актуальный цвет темы (включая градиентные темы)
+        
         Color themeColor = themeManager.getCurrentTheme().getBackgroundColor();
         return new Color(
                 themeColor.getRed(),
@@ -107,7 +100,7 @@ public class BlockOverlay extends Module {
     }
 
     private Color getOverlayColorSecondary() {
-        // Получаем актуальный цвет темы (включая градиентные темы)
+        
         Color themeColorSecondary = themeManager.getCurrentTheme().getSecondaryBackgroundColor();
         return new Color(
                 themeColorSecondary.getRed(),
@@ -118,12 +111,10 @@ public class BlockOverlay extends Module {
     }
 
     private void renderBlockOverlayDirect(MatrixStack matrices, Box box, Color overlayColor, Color overlayColorSecondary, float tickDelta) {
-        // Настройки для рендеринга сквозь стены
         RenderSystem.disableDepthTest();
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         
-        // Рендерим заливку с градиентом
         if (fill.getValue()) {
             Color fillColor = new Color(
                     overlayColor.getRed(),
@@ -140,7 +131,6 @@ public class BlockOverlay extends Module {
             renderBoxFillGradient(matrices, box, fillColor, fillColorSecondary);
         }
         
-        // Рендерим обводку с градиентом
         Color outlineColor = new Color(
                 overlayColor.getRed(),
                 overlayColor.getGreen(),
@@ -155,7 +145,6 @@ public class BlockOverlay extends Module {
         );
         renderBoxOutlineGradient(matrices, box, outlineColor, outlineColorSecondary, lineWidth.getValue().floatValue());
         
-        // Восстанавливаем настройки
         RenderSystem.enableDepthTest();
         RenderSystem.disableBlend();
     }
@@ -167,7 +156,7 @@ public class BlockOverlay extends Module {
         Matrix4f matrix = matrices.peek().getPositionMatrix();
         Vec3d camera = mc.gameRenderer.getCamera().getPos();
         
-        // Переводим в локальные координаты
+        
         float minX = (float) (box.minX - camera.x);
         float minY = (float) (box.minY - camera.y);
         float minZ = (float) (box.minZ - camera.z);
@@ -180,37 +169,37 @@ public class BlockOverlay extends Module {
         float b = color.getBlue() / 255.0f;
         float a = color.getAlpha() / 255.0f;
         
-        // Верхняя грань
+        
         buffer.vertex(matrix, minX, maxY, minZ).color(r, g, b, a);
         buffer.vertex(matrix, maxX, maxY, minZ).color(r, g, b, a);
         buffer.vertex(matrix, maxX, maxY, maxZ).color(r, g, b, a);
         buffer.vertex(matrix, minX, maxY, maxZ).color(r, g, b, a);
         
-        // Нижняя грань
+        
         buffer.vertex(matrix, minX, minY, maxZ).color(r, g, b, a);
         buffer.vertex(matrix, maxX, minY, maxZ).color(r, g, b, a);
         buffer.vertex(matrix, maxX, minY, minZ).color(r, g, b, a);
         buffer.vertex(matrix, minX, minY, minZ).color(r, g, b, a);
         
-        // Передняя грань
+        
         buffer.vertex(matrix, minX, minY, minZ).color(r, g, b, a);
         buffer.vertex(matrix, maxX, minY, minZ).color(r, g, b, a);
         buffer.vertex(matrix, maxX, maxY, minZ).color(r, g, b, a);
         buffer.vertex(matrix, minX, maxY, minZ).color(r, g, b, a);
         
-        // Задняя грань
+        
         buffer.vertex(matrix, maxX, minY, maxZ).color(r, g, b, a);
         buffer.vertex(matrix, minX, minY, maxZ).color(r, g, b, a);
         buffer.vertex(matrix, minX, maxY, maxZ).color(r, g, b, a);
         buffer.vertex(matrix, maxX, maxY, maxZ).color(r, g, b, a);
         
-        // Левая грань
+        
         buffer.vertex(matrix, minX, minY, maxZ).color(r, g, b, a);
         buffer.vertex(matrix, minX, minY, minZ).color(r, g, b, a);
         buffer.vertex(matrix, minX, maxY, minZ).color(r, g, b, a);
         buffer.vertex(matrix, minX, maxY, maxZ).color(r, g, b, a);
         
-        // Правая грань
+        
         buffer.vertex(matrix, maxX, minY, minZ).color(r, g, b, a);
         buffer.vertex(matrix, maxX, minY, maxZ).color(r, g, b, a);
         buffer.vertex(matrix, maxX, maxY, maxZ).color(r, g, b, a);
@@ -224,21 +213,20 @@ public class BlockOverlay extends Module {
         Matrix4f matrix = matrices.peek().getPositionMatrix();
         Vec3d camera = mc.gameRenderer.getCamera().getPos();
         
-        // Вычисляем расстояние до центра блока
+        
         Vec3d boxCenter = box.getCenter();
         double distance = camera.distanceTo(boxCenter);
         
-        // Корректируем толщину линии в зависимости от расстояния
-        // Чем дальше объект, тем тоньше линия (но не меньше 0.5)
+        
         float adjustedLineWidth = Math.max(0.5f, lineWidth * (float)(10.0 / Math.max(distance, 1.0)));
         
-        // Устанавливаем скорректированную ширину линии ПЕРЕД рендерингом
+        
         GL11.glLineWidth(adjustedLineWidth);
         
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         
-        // Переводим в локальные координаты
+        
         float minX = (float) (box.minX - camera.x);
         float minY = (float) (box.minY - camera.y);
         float minZ = (float) (box.minZ - camera.z);
@@ -251,7 +239,7 @@ public class BlockOverlay extends Module {
         float b = color.getBlue() / 255.0f;
         float a = color.getAlpha() / 255.0f;
         
-        // Нижнее основание
+        
         buffer.vertex(matrix, minX, minY, minZ).color(r, g, b, a);
         buffer.vertex(matrix, minX, minY, maxZ).color(r, g, b, a);
         buffer.vertex(matrix, minX, minY, maxZ).color(r, g, b, a);
@@ -261,7 +249,7 @@ public class BlockOverlay extends Module {
         buffer.vertex(matrix, maxX, minY, minZ).color(r, g, b, a);
         buffer.vertex(matrix, minX, minY, minZ).color(r, g, b, a);
         
-        // Верхнее основание
+        
         buffer.vertex(matrix, minX, maxY, minZ).color(r, g, b, a);
         buffer.vertex(matrix, minX, maxY, maxZ).color(r, g, b, a);
         buffer.vertex(matrix, minX, maxY, maxZ).color(r, g, b, a);
@@ -271,7 +259,7 @@ public class BlockOverlay extends Module {
         buffer.vertex(matrix, maxX, maxY, minZ).color(r, g, b, a);
         buffer.vertex(matrix, minX, maxY, minZ).color(r, g, b, a);
         
-        // Вертикальные ребра
+        
         buffer.vertex(matrix, minX, minY, minZ).color(r, g, b, a);
         buffer.vertex(matrix, minX, maxY, minZ).color(r, g, b, a);
         buffer.vertex(matrix, minX, minY, maxZ).color(r, g, b, a);
@@ -292,7 +280,7 @@ public class BlockOverlay extends Module {
         Matrix4f matrix = matrices.peek().getPositionMatrix();
         Vec3d camera = mc.gameRenderer.getCamera().getPos();
         
-        // Переводим в локальные координаты
+        
         float minX = (float) (box.minX - camera.x);
         float minY = (float) (box.minY - camera.y);
         float minZ = (float) (box.minZ - camera.z);
@@ -310,37 +298,31 @@ public class BlockOverlay extends Module {
         float b2 = endColor.getBlue() / 255.0f;
         float a2 = endColor.getAlpha() / 255.0f;
         
-        // Верхняя грань (градиент от startColor к endColor)
         buffer.vertex(matrix, minX, maxY, minZ).color(r1, g1, b1, a1);
         buffer.vertex(matrix, maxX, maxY, minZ).color(r2, g2, b2, a2);
         buffer.vertex(matrix, maxX, maxY, maxZ).color(r2, g2, b2, a2);
         buffer.vertex(matrix, minX, maxY, maxZ).color(r1, g1, b1, a1);
         
-        // Нижняя грань (градиент от endColor к startColor)
         buffer.vertex(matrix, minX, minY, maxZ).color(r2, g2, b2, a2);
         buffer.vertex(matrix, maxX, minY, maxZ).color(r1, g1, b1, a1);
         buffer.vertex(matrix, maxX, minY, minZ).color(r1, g1, b1, a1);
         buffer.vertex(matrix, minX, minY, minZ).color(r2, g2, b2, a2);
         
-        // Передняя грань (вертикальный градиент)
         buffer.vertex(matrix, minX, minY, minZ).color(r2, g2, b2, a2);
         buffer.vertex(matrix, maxX, minY, minZ).color(r2, g2, b2, a2);
         buffer.vertex(matrix, maxX, maxY, minZ).color(r1, g1, b1, a1);
         buffer.vertex(matrix, minX, maxY, minZ).color(r1, g1, b1, a1);
         
-        // Задняя грань (вертикальный градиент)
         buffer.vertex(matrix, maxX, minY, maxZ).color(r2, g2, b2, a2);
         buffer.vertex(matrix, minX, minY, maxZ).color(r2, g2, b2, a2);
         buffer.vertex(matrix, minX, maxY, maxZ).color(r1, g1, b1, a1);
         buffer.vertex(matrix, maxX, maxY, maxZ).color(r1, g1, b1, a1);
         
-        // Левая грань (вертикальный градиент)
         buffer.vertex(matrix, minX, minY, maxZ).color(r2, g2, b2, a2);
         buffer.vertex(matrix, minX, minY, minZ).color(r2, g2, b2, a2);
         buffer.vertex(matrix, minX, maxY, minZ).color(r1, g1, b1, a1);
         buffer.vertex(matrix, minX, maxY, maxZ).color(r1, g1, b1, a1);
         
-        // Правая грань (вертикальный градиент)
         buffer.vertex(matrix, maxX, minY, minZ).color(r2, g2, b2, a2);
         buffer.vertex(matrix, maxX, minY, maxZ).color(r2, g2, b2, a2);
         buffer.vertex(matrix, maxX, maxY, maxZ).color(r1, g1, b1, a1);
@@ -354,20 +336,20 @@ public class BlockOverlay extends Module {
         Matrix4f matrix = matrices.peek().getPositionMatrix();
         Vec3d camera = mc.gameRenderer.getCamera().getPos();
         
-        // Вычисляем расстояние до центра блока
+        
         Vec3d boxCenter = box.getCenter();
         double distance = camera.distanceTo(boxCenter);
         
-        // Корректируем толщину линии в зависимости от расстояния
+        
         float adjustedLineWidth = Math.max(0.5f, lineWidth * (float)(10.0 / Math.max(distance, 1.0)));
         
-        // Устанавливаем скорректированную ширину линии ПЕРЕД рендерингом
+        
         GL11.glLineWidth(adjustedLineWidth);
         
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         
-        // Переводим в локальные координаты
+        
         float minX = (float) (box.minX - camera.x);
         float minY = (float) (box.minY - camera.y);
         float minZ = (float) (box.minZ - camera.z);
@@ -385,7 +367,6 @@ public class BlockOverlay extends Module {
         float b2 = endColor.getBlue() / 255.0f;
         float a2 = endColor.getAlpha() / 255.0f;
         
-        // Нижнее основание (градиент)
         buffer.vertex(matrix, minX, minY, minZ).color(r1, g1, b1, a1);
         buffer.vertex(matrix, minX, minY, maxZ).color(r2, g2, b2, a2);
         buffer.vertex(matrix, minX, minY, maxZ).color(r2, g2, b2, a2);
@@ -395,7 +376,6 @@ public class BlockOverlay extends Module {
         buffer.vertex(matrix, maxX, minY, minZ).color(r2, g2, b2, a2);
         buffer.vertex(matrix, minX, minY, minZ).color(r1, g1, b1, a1);
         
-        // Верхнее основание (градиент)
         buffer.vertex(matrix, minX, maxY, minZ).color(r1, g1, b1, a1);
         buffer.vertex(matrix, minX, maxY, maxZ).color(r2, g2, b2, a2);
         buffer.vertex(matrix, minX, maxY, maxZ).color(r2, g2, b2, a2);
@@ -405,7 +385,6 @@ public class BlockOverlay extends Module {
         buffer.vertex(matrix, maxX, maxY, minZ).color(r2, g2, b2, a2);
         buffer.vertex(matrix, minX, maxY, minZ).color(r1, g1, b1, a1);
         
-        // Вертикальные ребра (вертикальный градиент)
         buffer.vertex(matrix, minX, minY, minZ).color(r2, g2, b2, a2);
         buffer.vertex(matrix, minX, maxY, minZ).color(r1, g1, b1, a1);
         buffer.vertex(matrix, minX, minY, maxZ).color(r2, g2, b2, a2);

@@ -85,7 +85,7 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
         if (!(e.getTarget() instanceof LivingEntity entity)) return;
         if (!entity.isAlive()) return;
         if (!e.isEffectsAllowed()) return;
-        // Проверяем, можно ли обработать этот удар (не является ли он дубликатом)
+        
         if (!e.canProcess()) return;
 
         List<Identifier> textures = getSelectedTextures();
@@ -106,7 +106,7 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
             return;
         }
 
-        // Определяем точку удара аналогично HitBubbles
+        
         Vec3d base;
         HitResult ch = mc.crosshairTarget;
         if (ch != null && ch.getType() == HitResult.Type.ENTITY) {
@@ -123,8 +123,8 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
             base = entity.getPos().add(0, entity.getHeight() / 2f, 0);
         }
 
-        // Спавним частицы сразу, как в HitBubbles (без отложенной очереди)
-        // Предпочтительное направление: от атакующего к точке удара (разлет в противоположную сторону)
+        
+        
         Vec3d attackerEye = e.getPlayer() != null ? e.getPlayer().getEyePos() : mc.player.getEyePos();
         Vec3d preferredDir = base.subtract(attackerEye);
         if (preferredDir.lengthSquared() == 0) preferredDir = mc.player.getRotationVec(1.0f);
@@ -201,18 +201,18 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
         Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
         for (int i = 0, size = particles.size(); i < size; i++) {
             Particle p = particles.get(i);
-            // Упростим отсечение: как в Snow, по дистанции, без frustum
+            
 
             p.updatePhysics();
 
-            // Рендер не подавляем: приземление обрабатывается физикой, частица остаётся видимой
+            
 
             float f = Math.max(0f, 1 - ((now - p.spawnTime) / (float) p.lifeTime));
             int alpha = (int) (255 * 0.8f * f);
             if (alpha <= 0) continue;
 
-            // Перевод пиксельного размера в мировые единицы (~блоки)
-            // Масштаб в мире с коэффициентом 0.3 по запросу
+            
+            
             float worldSize = dmgSize.getValue() * 0.04f * 0.3f * f;
             // Live theme color each frame for gradient themes
             Color themeColor = themeManager.getCurrentTheme().getBackgroundColor();
@@ -250,7 +250,7 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
     private boolean isSolidAt(BlockPos pos) {
         if (mc.world == null) return false;
         var state = mc.world.getBlockState(pos);
-        // Считаем блок «твёрдым», если у него НЕ пустая коллизионная форма
+        
         return !state.getCollisionShape(mc.world, pos).isEmpty();
     }
 
@@ -264,7 +264,7 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
             var state = mc.world.getBlockState(check);
             var shape = state.getCollisionShape(mc.world, check);
             if (shape.isEmpty()) continue;
-            // Берём AABB шейпа целиком (shape.getBoundingBox) — для оценки верхней границы
+            
             net.minecraft.util.math.Box bb = shape.getBoundingBox();
             double topY = check.getY() + bb.maxY;
             if (pos.y >= topY) {
@@ -345,24 +345,24 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
 
 		static Particle createDamage(DamageParticles owner, Vec3d pos, Identifier tex, long lifeTime, float scatter, Vec3d preferredDir) {
             double speedJitter = ThreadLocalRandom.current().nextDouble(0.2, 0.4);
-            // Позиционная погрешность (XYZ)
+            
             double jx = ThreadLocalRandom.current().nextDouble(-scatter, scatter);
             double jy = ThreadLocalRandom.current().nextDouble(-scatter, scatter);
             double jz = ThreadLocalRandom.current().nextDouble(-scatter, scatter);
             Vec3d spawnPos = pos.add(jx, jy, jz);
 
-            // Равномерный разброс во все стороны (полная сфера)
+            
             double theta = ThreadLocalRandom.current().nextDouble(0, Math.PI * 2.0);
             double u = ThreadLocalRandom.current().nextDouble(-1.0, 1.0);
             double r = Math.sqrt(1 - u * u);
             double sx = r * Math.cos(theta);
             double sy = u;
             double sz = r * Math.sin(theta);
-            // Никогда не вверх: направляем вертикальную составляющую вниз или по горизонтали
+            
 			Vec3d dir = new Vec3d(sx, -Math.abs(sy), sz).normalize();
 
-			// Масштабируем скорость разлёта от scatter
-			double baseline = 0.07; // соответствует настройке по умолчанию
+			
+			double baseline = 0.07; 
 			double speedScale = Math.max(0.4, Math.min(2.5, scatter / baseline));
 			double baseSpeed = ThreadLocalRandom.current().nextDouble(0.02, 0.25) * speedScale;
             Vec3d velocity = dir.multiply(baseSpeed * speedJitter);
@@ -372,22 +372,22 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
 
 		static Particle createLegacy(DamageParticles owner, Vec3d pos, Identifier tex, long lifeTime, float scatter) {
             double speedJitter = ThreadLocalRandom.current().nextDouble(0.2, 0.4);
-            // Позиционная погрешность (XYZ)
+            
             double jx = ThreadLocalRandom.current().nextDouble(-scatter, scatter);
             double jy = ThreadLocalRandom.current().nextDouble(-scatter, scatter);
             double jz = ThreadLocalRandom.current().nextDouble(-scatter, scatter);
             Vec3d spawnPos = pos.add(jx, jy, jz);
 
-            // Равномерный разброс во все стороны (полная сфера)
+            
             double theta = ThreadLocalRandom.current().nextDouble(0, Math.PI * 2.0);
             double u = ThreadLocalRandom.current().nextDouble(-1.0, 1.0);
             double r = Math.sqrt(1 - u * u);
             double sx = r * Math.cos(theta);
             double sy = u;
             double sz = r * Math.sin(theta);
-            // Никогда не вверх: направляем вертикальную составляющую вниз или по горизонтали
+            
 			Vec3d dir = new Vec3d(sx, -Math.abs(sy), sz).normalize();
-			// Масштабируем скорость разлёта от scatter (legacy)
+			
 			double baseline = 0.07;
 			double speedScale = Math.max(0.4, Math.min(2.5, scatter / baseline));
 			double baseSpeed = ThreadLocalRandom.current().nextDouble(0.04, 0.12) * speedScale;
@@ -397,7 +397,7 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
         }
 
         void updatePhysics() {
-            // Простой плавный полёт: гравитация + лёгкое затухание, без столкновений/отскоков
+            
             double s = owner.animSpeed.getValue();
             double gravity = 0.00006;
             velocityPhysics = velocityPhysics.subtract(0, gravity * s, 0);
@@ -409,7 +409,7 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
 			Vec3d step = velocityPhysics.multiply(s);
 			Vec3d nextPos = pos.add(step);
 
-			// Горизонтальные столкновения со стенами (raycast между позициями)
+			
 			if (owner.mc.world != null) {
 				net.minecraft.world.RaycastContext ctx = new net.minecraft.world.RaycastContext(
 					prevPos,
@@ -421,7 +421,7 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
 				net.minecraft.util.hit.HitResult hit = owner.mc.world.raycast(ctx);
 				if (hit.getType() == net.minecraft.util.hit.HitResult.Type.BLOCK) {
 					net.minecraft.util.hit.BlockHitResult bhr = (net.minecraft.util.hit.BlockHitResult) hit;
-					// Сдвигаем позицию к точке контакта с небольшим отступом по нормали
+					
 					final double eps = 0.002;
 					switch (bhr.getSide().getAxis()) {
 						case X -> {
@@ -437,12 +437,12 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
 							velocityPhysics = new Vec3d(velocityPhysics.x * 0.88, velocityPhysics.y, -velocityPhysics.z * 0.4);
 						}
 						case Y -> {
-							// Верх/низ: оставим обработку отскока ниже в логике «земли», но притянем к точке
+							
 							boolean up = (bhr.getSide() == net.minecraft.util.math.Direction.UP);
 							double ny = hit.getPos().y + (up ? HOVER_HEIGHT : -eps);
 							nextPos = new Vec3d(hit.getPos().x, ny, hit.getPos().z);
 							if (!up) {
-								// удар в потолок — инвертируем vy мягко
+								
 								velocityPhysics = new Vec3d(velocityPhysics.x * 0.9, -velocityPhysics.y * 0.3, velocityPhysics.z * 0.9);
 							}
 						}
@@ -450,12 +450,12 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
 				}
 			}
 
-            // Приземление на верхнюю грань блока (с отскоком, без проваливания под блок)
+            
             double groundY = owner.groundTopY(nextPos);
             if (!Double.isNaN(groundY) && nextPos.y <= groundY + HOVER_HEIGHT) {
-                // Контакт с поверхностью
+                
                 pos = new Vec3d(nextPos.x, groundY + HOVER_HEIGHT, nextPos.z);
-				// Отскакиваем до 3 раз, затем оседаем
+				
 				if (velocityPhysics.y <= 0.0) {
 					if (bounces < 3) {
                         double restitution = 0.18 * Math.pow(0.6, Math.max(0, bounces));

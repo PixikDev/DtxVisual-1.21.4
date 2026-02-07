@@ -74,7 +74,7 @@ public class ClickGui extends Screen implements Wrapper {
         this.width = 320f;
         this.height = 300f;
         this.x = (mc.getWindow().getScaledWidth() - this.width) / 2f;
-        this.y = (mc.getWindow().getScaledHeight() - this.height) / 2f; // фиксированная позиция по центру
+        this.y = (mc.getWindow().getScaledHeight() - this.height) / 2f; 
 
         buildComponentsCache();
         scrollY = 0f;
@@ -132,7 +132,7 @@ public class ClickGui extends Screen implements Wrapper {
 
         if (closing) {
             yAnimation.update(false);
-            // Плавное смещение к центру при закрытии (чуть ниже → к центру)
+            
             float offset = (1f - yAnimation.getValue()) * 12f;
             this.y = targetY + offset;
             if (yAnimation.getValue() <= 0.01f) {
@@ -142,18 +142,18 @@ public class ClickGui extends Screen implements Wrapper {
             }
         } else {
             yAnimation.update(true);
-            // Появление: старт чуть ниже и плавно встаём по центру
+            
             float offset = (1f - yAnimation.getValue()) * 12f;
             this.y = targetY + offset;
         }
 
         this.x = (mc.getWindow().getScaledWidth() - this.width) / 2f;
 
-        // Используем fade по альфе + небольшой вертикальный оффсет для контента
+        
         uiAlpha = Math.max(0f, Math.min(1f, yAnimation.getValue()));
         contentOffsetY = (1f - uiAlpha) * 8f;
 
-        // Затемнение заднего фона под GUI
+        
         int backdropAlpha = (int) (140 * uiAlpha);
         if (backdropAlpha > 0) {
             Render2D.drawRect(context.getMatrices(), 0f, 0f,
@@ -161,7 +161,7 @@ public class ClickGui extends Screen implements Wrapper {
                     new Color(0, 0, 0, backdropAlpha));
         }
 
-        // Красивое многоступенчатое свечение вокруг панели GUI
+        
         renderPanelGlow(context);
 
         int alpha = (int) (255 * uiAlpha);
@@ -185,7 +185,7 @@ public class ClickGui extends Screen implements Wrapper {
         float fontSize = 8f;
         float lineHeight = Fonts.MEDIUM.getHeight(fontSize) + gap;
 
-        float startY = y + height + 8f; // ниже ClickGUI
+        float startY = y + height + 8f; 
         int textA = (int) (230 * uiAlpha);
         Color textColor = new Color(255, 255, 255, textA);
 
@@ -215,19 +215,19 @@ public class ClickGui extends Screen implements Wrapper {
         float gw = width;
         float gh = height;
 
-        // Шейдерный blur вокруг панели (аккуратный мягкий ореол)
+        
         float radius = 8f;
         float blurRadius = 10f;
         int a = (int) (22 * uiAlpha);
         if (a > 0) {
-            // Немного расширим область, чтобы свечение выглядело как тень
+            
             Render2D.drawShaderBlurRect(ctx.getMatrices(), gx - 2f, gy - 2f, gw + 4f, gh + 4f, radius + 1f, blurRadius,
                     new Color(255, 255, 255, a));
         }
     }
 
     private void renderCategories(DrawContext ctx) {
-        float startY = y + 10f + contentOffsetY; // плавный вертикальный оффсет при открытии
+        float startY = y + 10f + contentOffsetY; 
         float tabW = 40f;
         float tabH = 15f;
         float gap = 6f;
@@ -252,12 +252,12 @@ public class ClickGui extends Screen implements Wrapper {
 
             float drawX = startX + offsetX;
             if (active) {
-                // Активная вкладка - акцентный цвет темы с альфой
+                
                 Color acc = themeManager.getCurrentTheme().getAccentColor();
                 Render2D.drawRoundedRect(ctx.getMatrices(), drawX, startY, tabW, tabH, 4f,
                         new Color(acc.getRed(), acc.getGreen(), acc.getBlue(), baseAlpha));
             } else {
-                // Неактивные вкладки - фон с альфой
+                
                 Render2D.drawRoundedRect(ctx.getMatrices(), drawX, startY, tabW, tabH, 4f,
                         new Color(20, 20, 20, bgAlphaInactive));
             }
@@ -309,7 +309,7 @@ public class ClickGui extends Screen implements Wrapper {
         // Left content (modules/themes)
         float tabH = 18f;
         float leftX = x + 8f;
-        float leftY = y + 10f + tabH + 9f + contentOffsetY; // применяем оффсет
+        float leftY = y + 10f + tabH + 9f + contentOffsetY; 
         float leftW = width - 16f;
         float leftH = height - ((leftY - y) + 8f);
 
@@ -352,9 +352,9 @@ public class ClickGui extends Screen implements Wrapper {
                 mcComp.setWidth(colW);
                 mcComp.setRenderExternally(true);
                 mcComp.setGlobalAlpha(uiAlpha);
-                // принудительно скрыть внутренние дети (не рисовать раскрытые настройки слева)
+                
                 if (mcComp.getOpenAnimation().getValue() > 0f && mcComp != activeSettings) {
-                    // оставляем как есть — внутренний рендер отключён флагом renderExternally
+                    
                 }
                 mcComp.render(ctx, mouseX, mouseY, delta);
                 float totalH = mcComp.getHeight();
@@ -367,7 +367,7 @@ public class ClickGui extends Screen implements Wrapper {
             scrollYTarget = clamp(scrollYTarget, 0f, maxScroll);
             scrollY = clamp(scrollY, 0f, maxScroll);
 
-            // Мягкий оверлей для плавного исчезновения модулей при открытии/закрытии
+            
             float tModules = 1f - uiAlpha;
             float easedModules = tModules * tModules * (3f - 2f * tModules); // smoothstep
             int modulesOverlayAlpha = (int) (140 * easedModules);
@@ -410,7 +410,7 @@ public class ClickGui extends Screen implements Wrapper {
         if (anim > 0.01f) {
             // right settings panel (slides in from right with fade)
             float basePanelX = x + width + 5f;
-            float panelY = y + 90f + contentOffsetY; // применяем оффсет
+            float panelY = y + 90f + contentOffsetY; 
             float panelW = 120f;
             float panelH = (height - 200f);
             float slideOffset = (1f - anim) * 40f;
@@ -420,7 +420,7 @@ public class ClickGui extends Screen implements Wrapper {
             float smoothPanel = (float) (Math.pow(Math.min(1f, anim * uiAlpha), 2) * (3 - 2 * Math.min(1f, anim * uiAlpha)));
             int panelA = (int) (255 * smoothPanel);
 
-            // Убрали blur под панелью настроек: лёгкая подложка
+            
             Render2D.drawRoundedRect(ctx.getMatrices(), drawPanelX - 1f, panelY - 1f, panelW + 2f, panelH + 2f, 3f,
                     new Color(255, 255, 255, Math.min(18, (int) (18f * anim * uiAlpha))));
 
@@ -470,7 +470,7 @@ public class ClickGui extends Screen implements Wrapper {
                 Render2D.drawRoundedRect(ctx.getMatrices(), trackX - 0.5f, thumbY, trackW + 1f, thumbH, 1.5f, thumbColor);
             }
 
-            // Мягкий скруглённый оверлей над содержимым (снижаем альфу и убираем жёсткие края) с плавной кривой
+            
             float tSettings = 1f - Math.min(1f, anim * uiAlpha);
             float easedSettings = tSettings * tSettings * (3f - 2f * tSettings); // smoothstep
             int contentOverlayAlpha = (int) (160 * easedSettings);
@@ -528,7 +528,7 @@ public class ClickGui extends Screen implements Wrapper {
                 }
             } else {
                 List<ModuleComponent> comps = componentsByCategory.getOrDefault(selectedCategory, Collections.emptyList());
-                // Если какое-либо меню бинда открыто — сделать модальным: обработать клик только этим компонентом
+                
                 for (ModuleComponent mcComp : comps) {
                     if (mcComp.isBindModeMenuOpen()) {
                         mcComp.mouseClicked(mouseX, mouseY, button);

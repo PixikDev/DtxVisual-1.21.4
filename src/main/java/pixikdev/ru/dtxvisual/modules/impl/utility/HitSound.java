@@ -37,7 +37,7 @@ public class HitSound extends Module {
         if (nya.getValue()) return "dtxvisual:nya";
         if (skeet.getValue()) return "dtxvisual:skeet";
         if (uwu.getValue()) return "dtxvisual:uwu";
-        return "dtxvisual:bell"; // дефолт
+        return "dtxvisual:bell"; 
     }
     public @NotNull NumberSetting getVolume() {
         return Volume;

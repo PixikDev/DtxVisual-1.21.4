@@ -28,7 +28,7 @@ public abstract class GameRendererMixin implements Wrapper {
 	@Inject(method = "renderWorld", at = @At("HEAD"))
 	public void renderWorld(RenderTickCounter renderTickCounter, CallbackInfo ci) {
 		Render3D.prepare();
-		// Очищаем очереди для отдельных рендеров
+		
 		Render3D.clearCustomHitBoxQueues();
 		Render3D.clearBlockOverlayQueues();
 	}
@@ -42,11 +42,11 @@ public abstract class GameRendererMixin implements Wrapper {
 		Render3D.setTickDelta(tickDelta);
 		EventRender3D.Game event = new EventRender3D.Game(renderTickCounter, matrixStack);
 		DtxVisual.getInstance().getEventHandler().post(event);
-		// Рендерим остальные элементы с обычными настройками
+		
 		Render3D.draw(Render3D.QUADS, Render3D.DEBUG_LINES, false);
 		Render3D.draw(Render3D.SHINE_QUADS, Render3D.SHINE_DEBUG_LINES, true);
 		
-		// CustomHitBox и BlockOverlay рендерятся в своих модулях
+		
 		RenderSystem.getModelViewStack().popMatrix();
 	}
 

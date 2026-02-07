@@ -14,7 +14,7 @@ import org.lwjgl.glfw.GLFW;
 import net.minecraft.client.resource.language.I18n;
 
 public class FTHelper extends Module {
-    // Бинды (можешь поменять на любые удобные)
+    
     private final BindSetting disorientBind = new BindSetting("setting.disorientBind", new Bind(GLFW.GLFW_KEY_H, false));
     private final BindSetting trapBind = new BindSetting("setting.trapBind", new Bind(GLFW.GLFW_KEY_T, false));
 
@@ -33,17 +33,17 @@ public class FTHelper extends Module {
 
         long window = mc.getWindow().getHandle();
 
-        // Дизориентация: по нажатию бинда берём айтем из хотбара
+        
         boolean disorientDown = isBindDown(window, disorientBind.getValue());
         if (disorientDown && !disorientLatch) {
-            switchToItem(mc, Items.ENDER_EYE); // сюда можно поставить кастомный айтем для "дизориентации"
+            switchToItem(mc, Items.ENDER_EYE); 
             disorientLatch = true;
         } else if (!disorientDown) disorientLatch = false;
 
-        // Трапка: по нажатию бинда берём блок для ловушки (например, obsidian)
+        
         boolean trapDown = isBindDown(window, trapBind.getValue());
         if (trapDown && !trapLatch) {
-            switchToItem(mc, Items.NETHERITE_SCRAP); // или другой блок, который используешь для трапа
+            switchToItem(mc, Items.NETHERITE_SCRAP); 
             trapLatch = true;
         } else if (!trapDown) trapLatch = false;
     }

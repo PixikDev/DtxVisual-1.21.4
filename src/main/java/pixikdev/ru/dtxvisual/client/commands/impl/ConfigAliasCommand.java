@@ -21,7 +21,7 @@ public class ConfigAliasCommand extends Command {
             return 1;
         });
         
-        // Команда save
+        
         builder.then(literal("save")
                 .then(arg("название", StringArgumentType.string())
                         .executes(context -> {
@@ -30,7 +30,7 @@ public class ConfigAliasCommand extends Command {
                             return 1;
                         })));
         
-        // Команда load
+        
         builder.then(literal("load")
                 .executes(context -> {
                     ChatUtils.sendMessage("§cУкажите название");
@@ -47,21 +47,21 @@ public class ConfigAliasCommand extends Command {
                             return 1;
                         })));
         
-        // Команда list
+        
         builder.then(literal("list")
                 .executes(context -> {
                     listConfigs();
                     return 1;
                 }));
         
-        // Команда dir
+        
         builder.then(literal("dir")
                 .executes(context -> {
                     showConfigDirectory();
                     return 1;
                 }));
         
-        // Команда delete
+        
         builder.then(literal("delete")
                 .then(arg("название", StringArgumentType.string())
                         .executes(context -> {
@@ -70,7 +70,7 @@ public class ConfigAliasCommand extends Command {
                             return 1;
                         })));
         
-        // Команда info
+        
         builder.then(literal("info")
                 .then(arg("название", StringArgumentType.string())
                         .executes(context -> {
@@ -156,7 +156,7 @@ public class ConfigAliasCommand extends Command {
         ChatUtils.sendMessage("§6Папка конфигураций: §e" + directory);
         
         try {
-            // Открываем папку в проводнике
+            
             java.io.File dirFile = new java.io.File(directory);
             if (!dirFile.exists()) {
                 dirFile.mkdirs();

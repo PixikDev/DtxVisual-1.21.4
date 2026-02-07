@@ -85,7 +85,7 @@ public class WorldParticles extends Module implements ThemeManager.ThemeChangeLi
         if (isVzletMode()) {
             pos = mc.player.getPos().add(
                     ThreadLocalRandom.current().nextDouble(-radius, radius),
-                    0.2, // чуть выше ног
+                    0.2, 
                     ThreadLocalRandom.current().nextDouble(-radius, radius)
             );
             vel = new Vec3d(
@@ -148,7 +148,7 @@ public class WorldParticles extends Module implements ThemeManager.ThemeChangeLi
         float size = baseSize * sizeFactor * heightFactor;
         int alpha = Math.max(0, Math.min(255, (int) (255 * sizeFactor * heightFactor * lightFactor)));
 
-        // Цвет всегда насыщенный, не зависит от lightFactor
+        
         Color glowColor = new Color(
                 p.color.getRed(),
                 p.color.getGreen(),
@@ -181,7 +181,7 @@ public class WorldParticles extends Module implements ThemeManager.ThemeChangeLi
     @Override
     public void onThemeChanged(ThemeManager.Theme theme) {
         this.currentColor = theme.getBackgroundColor();
-        // Обновляем цвет у всех существующих частиц
+        
         for (Particle p : particles) {
             p.color = this.currentColor;
         }

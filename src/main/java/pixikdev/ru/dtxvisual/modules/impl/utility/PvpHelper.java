@@ -33,7 +33,7 @@ public class PvpHelper extends Module {
 
         long window = mc.getWindow().getHandle();
 
-        // 1) Pearl: по нажатию — только взять в руку
+        
         boolean pearlDown = isBindDown(window, pearlBind.getValue());
         if (pearlDown && !pearlLatch) {
             switchToItem(mc, Items.ENDER_PEARL);
@@ -63,10 +63,10 @@ public class PvpHelper extends Module {
             int slot = findInHotbar(mc, item);
             if (slot != -1) {
                 mc.player.getInventory().selectedSlot = slot;
-                // Для хилок: проверяем, что это нужное зелье
-                // Если понадобится — можно отфильтровать по конкретным эффектам зелья через DataComponentTypes.POTION_CONTENTS
+                
+                
 
-                // Эмулируем удержание ПКМ, чтобы шла ванильная анимация
+                
                 mc.options.useKey.setPressed(true);
                 forcedUseKey = true;
 

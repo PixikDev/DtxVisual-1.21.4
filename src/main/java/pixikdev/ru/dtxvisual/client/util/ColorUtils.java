@@ -69,7 +69,7 @@ public class ColorUtils implements Wrapper {
         return new Color(r, g, b, a);
     }
 
-    // Утилиты для работы с RGB цветами
+    
     public static int rgb(int r, int g, int b) {
         return new Color(r, g, b).getRGB();
     }

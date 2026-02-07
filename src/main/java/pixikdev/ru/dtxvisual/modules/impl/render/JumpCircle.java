@@ -27,19 +27,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class JumpCircle extends Module implements ThemeManager.ThemeChangeListener {
 
-    // 👇 сильно уменьшаем размер
+    
     private final NumberSetting size = new NumberSetting("Circle Size", 0.5f, 0.2f, 2.0f, 0.05f);
     private final NumberSetting Life_Time = new NumberSetting("Life Time", 0.5f, 0.2f, 2.0f, 0.05f);
     private final NumberSetting speed = new NumberSetting("Speed", 1.0f, 0.5f, 3.0f, 0.1f);
 
     private static final long GROW_MS = 600L;
 
-    // Текстуры: вариант 1 — jumpcircle.png, вариант 2 — circle.png
+    
     private final BooleanSetting texJumpCircle = new BooleanSetting("First", true, () -> false);
     private final BooleanSetting texCircle = new BooleanSetting("Second", false, () -> false);
     private final ListSetting textureMode = new ListSetting("Texture", true, texJumpCircle, texCircle);
 
-    // Анимации: Grow, Pulse, Ripple
+    
     private final BooleanSetting animGrow = new BooleanSetting("Grow", true, () -> false);
     private final BooleanSetting animPulse = new BooleanSetting("Pulse", false, () -> false);
     private final BooleanSetting animRipple = new BooleanSetting("Ripple", false, () -> false);
@@ -89,11 +89,11 @@ public class JumpCircle extends Module implements ThemeManager.ThemeChangeListen
         long currentTime = System.currentTimeMillis();
         double velocityY = p.getVelocity().y;
 
-        // Упрощенная логика: игрок был на земле, теперь не на земле, и есть положительная скорость
+        
         if (wasOnGround && !onGround && velocityY > 0.01 && (currentTime - lastJumpTime) > 50) {
-            // Создаем круг на позиции прыжка, но на 1 блок выше
+            
             BlockPos blockPos = p.getBlockPos();
-            double y = blockPos.getY() + 0.1; // На 1 блок выше + небольшой отступ
+            double y = blockPos.getY() + 0.1; 
             Vec3d origin = new Vec3d(p.getX(), y, p.getZ());
             circles.add(new Circle(origin, (long) (Life_Time.getValue() * 1000L)));
             lastJumpTime = currentTime;
@@ -112,25 +112,25 @@ public class JumpCircle extends Module implements ThemeManager.ThemeChangeListen
             for (Circle c : circles) {
                 long age = now - c.spawnTime;
 
-                // Нормированная величина времени жизни 0..1 с учетом скорости
+                
                 float t = Math.max(0f, Math.min(1f, (age / (float) c.ttl) * speed.getValue()));
 
-                // Вычисляем масштаб и прозрачность в зависимости от режима
+                
                 float radiusMul;
                 float alphaK;
                 if (animPulse.getValue()) {
-                    // Пульсация: несколько «всплесков» в течение жизни
-                    float pulses = 2.0f; // количество пульсов
+                    
+                    float pulses = 2.0f; 
                     float s = (float) Math.sin(Math.PI * pulses * t);
                     radiusMul = 0.7f + 0.5f * Math.max(0f, s);
                     alphaK = Math.max(0f, s) * (1.0f - t);
                 } else if (animRipple.getValue()) {
-                    // Ripple: мягкое появление/исчезновение и ease-out по радиусу
+                    
                     float te = Easing.EASE_OUT_CIRC.apply(Math.max(0f, Math.min(1f, t)));
                     radiusMul = 0.6f + 0.8f * te;
                     alphaK = (float) Math.pow(Math.sin(Math.max(0f, Math.min(1f, t)) * (float) Math.PI), 1.2f);
                 } else {
-                    // Grow: используем плавный S-curve по времени + эксп. затухание
+                    
                     float te = Easing.BOTH_SINE.apply(t);
                     radiusMul = 0.6f + 0.4f * te;
                     alphaK = (float) Math.pow(1.0f - t, 0.8f) * te;

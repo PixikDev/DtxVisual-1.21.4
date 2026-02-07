@@ -14,7 +14,7 @@ import java.awt.*;
 
 public class Crosshair extends Module implements ThemeManager.ThemeChangeListener {
 
-    private static Crosshair instance; // Для доступа через Mixin
+    private static Crosshair instance; 
 
     private final NumberSetting thickness = new NumberSetting("Толщина", 1f, 0.5f, 3f, 0.1f);
     private final NumberSetting length = new NumberSetting("Длина", 3f, 1f, 8f, 0.5f);
@@ -30,7 +30,7 @@ public class Crosshair extends Module implements ThemeManager.ThemeChangeListene
         super("Crosshair", Category.Render, "Кастомный прицел");
         instance = this;
         themeManager = ThemeManager.getInstance();
-        currentColor = themeManager.getThemeColor(); // Предполагаем, что ThemeManager имеет getThemeColor()
+        currentColor = themeManager.getThemeColor(); 
         themeManager.addThemeChangeListener(this);
     }
 
@@ -42,12 +42,12 @@ public class Crosshair extends Module implements ThemeManager.ThemeChangeListene
     public void onRender2D(EventRender2D e) {
         if (mc.player == null || mc.world == null) return;
 
-        // Проверка режима F5 (от третьего лица)
+        
         if (!mc.options.getPerspective().isFirstPerson()) {
-            return; // Не рендерим прицел в режиме от третьего лица
+            return; 
         }
 
-        // Кэшируем размеры окна и повторно используем значения
+        
         int sw = mc.getWindow().getScaledWidth();
         int sh = mc.getWindow().getScaledHeight();
         float x = sw * 0.5f;
@@ -56,13 +56,13 @@ public class Crosshair extends Module implements ThemeManager.ThemeChangeListene
         float currentGap = gap.getValue();
         if (dynamicGap.getValue()) {
             float cooldown = 1f - mc.player.getAttackCooldownProgress(0);
-            currentGap = Math.min(currentGap + 8f * cooldown, 10f); // Ограничение разрыва
+            currentGap = Math.min(currentGap + 8f * cooldown, 10f); 
         }
 
         float w = thickness.getValue();
         float l = length.getValue();
 
-        // Используем цвет темы, если не включен цвет при наведении на сущность
+        
         Color color = currentColor;
         if (useEntityColor.getValue() && mc.crosshairTarget != null && mc.crosshairTarget.getType() == HitResult.Type.ENTITY) {
             color = entityColor;
@@ -77,7 +77,7 @@ public class Crosshair extends Module implements ThemeManager.ThemeChangeListene
 
     @Override
     public void onThemeChanged(ThemeManager.Theme theme) {
-        this.currentColor = theme.getBackgroundColor(); // Используем getBackgroundColor(), как в BlockOverlay
+        this.currentColor = theme.getBackgroundColor(); 
     }
 
     @Override

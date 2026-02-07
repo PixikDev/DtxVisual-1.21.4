@@ -83,7 +83,7 @@ public abstract class InGameHudMixin {
     @Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
     public void renderCrosshair(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         if (DtxVisual.getInstance().getModuleManager().getModule(Crosshair.class).isToggled()) {
-            ci.cancel(); // Отменяем рендеринг стандартного прицела
+            ci.cancel(); 
         }
     }
 

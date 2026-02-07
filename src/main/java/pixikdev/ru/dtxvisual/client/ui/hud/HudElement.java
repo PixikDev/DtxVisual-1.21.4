@@ -55,14 +55,14 @@ public abstract class HudElement extends Module {
         cornerAnimation.update(hoverAnimation.getValue() > 0);
 
         if (button) {
-            // Блок: если уже тянем другой элемент, не позволяем этому элементу начинать/продолжать перетаскивание
+            
             HudElement current = DtxVisual.getInstance().getHudManager().getCurrentDragging();
             if (current != null && current != this) {
                 dragging = false;
                 return;
             }
 
-            // Проверяем, что пользователь находится в чате для перетаскивания
+            
             if (!(mc.currentScreen instanceof ChatScreen)) {
                 dragging = false;
                 button = false;
@@ -78,7 +78,7 @@ public abstract class HudElement extends Module {
             }
 
             if (dragging) {
-                // Исправление: обновляем позицию только один раз за кадр
+                
                 float sw = mc.getWindow().getScaledWidth();
                 float sh = mc.getWindow().getScaledHeight();
                 float finalX = Math.min(Math.max(mouseX() - dragX, 0), sw - width);
@@ -112,7 +112,7 @@ public abstract class HudElement extends Module {
                     else if (Math.abs(finalY - bottomY) <= threshold) finalY = bottomY;
                 }
 
-                // Обновляем позицию только если она действительно изменилась
+                
                 float newX = finalX / sw;
                 float newY = finalY / sh;
 
@@ -120,7 +120,7 @@ public abstract class HudElement extends Module {
                     Math.abs(position.getValue().getY() - newY) > 0.001f) {
                     position.getValue().setX(newX);
                     position.getValue().setY(newY);
-                    // Планируем автосохранение после изменения позиции
+                    
                     try {
                         AutoSaveManager asm = DtxVisual.getInstance().getAutoSaveManager();
                         if (asm != null) asm.scheduleAutoSave();
@@ -131,32 +131,32 @@ public abstract class HudElement extends Module {
             dragging = false;
         }
 
-        // Красивая анимация появления углов при наведении с закруглениями
+        
         if (mc.currentScreen instanceof ChatScreen && cornerAnimation.getValue() > 0) {
             float animationValue = cornerAnimation.getValue();
-            float animatedCornerSize = 16f * animationValue; // анимированный размер углов
-            int alpha = (int) (255 * animationValue); // анимированная прозрачность
+            float animatedCornerSize = 16f * animationValue; 
+            int alpha = (int) (255 * animationValue); 
             
-            // Добавляем отступ от краев элемента
-            float padding = 4f; // отступ углов от краев
+            
+            float padding = 4f; 
             float cornerX = getX() - padding;
             float cornerY = getY() - padding;
             float cornerWidth = getWidth() + (padding * 2);
             float cornerHeight = getHeight() + (padding * 2);
             
-            // Отладочная информация
             
-            // Используем собственный метод рендеринга закругленных углов
+            
+            
             Render2D.drawRoundedCorner(
                     e.getContext().getMatrices(),
                     cornerX, cornerY,
                     cornerWidth, cornerHeight,
                     animatedCornerSize,
-                    new Color(255, 255, 255, alpha) // белые углы
+                    new Color(255, 255, 255, alpha) 
             );
         }
 
-        // Рисуем направляющие (центральные и боковые) только во время перетаскивания
+        
         if (mc.currentScreen instanceof ChatScreen && dragging) {
             float sw = mc.getWindow().getScaledWidth();
             float sh = mc.getWindow().getScaledHeight();
@@ -214,8 +214,8 @@ public abstract class HudElement extends Module {
         if (setting != null && setting instanceof BooleanSetting) {
             toggledAnimation.update(((BooleanSetting) setting).getValue());
         } else {
-            // Если элемент не зарегистрирован в списке элементов (например, динамический PerfHUD),
-            // используем состояние модуля isToggled() вместо принудительного скрытия
+            
+            
             toggledAnimation.update(isToggled());
         }
     }
@@ -228,13 +228,13 @@ public abstract class HudElement extends Module {
             button = false;
             dragging = false;
             DtxVisual.getInstance().getHudManager().setCurrentDragging(null);
-            // После завершения перетаскивания ещё раз планируем автосохранение
+            
             try {
                 AutoSaveManager asm = DtxVisual.getInstance().getAutoSaveManager();
                 if (asm != null) asm.scheduleAutoSave();
             } catch (Throwable ignored) {}
         } else if (e.getAction() == 1) {
-            // Кнопка мыши считается зажатой только если нет другого перетаскиваемого элемента
+            
             if (DtxVisual.getInstance().getHudManager().getCurrentDragging() == null ||
                 DtxVisual.getInstance().getHudManager().getCurrentDragging() == this) {
                 button = true;
@@ -294,7 +294,7 @@ public abstract class HudElement extends Module {
         this.height = height;
         position.getValue().setX(x / mc.getWindow().getScaledWidth());
         position.getValue().setY(y / mc.getWindow().getScaledHeight());
-        // Планируем автосохранение при программном изменении границ/позиции
+        
         try {
             AutoSaveManager asm = DtxVisual.getInstance().getAutoSaveManager();
             if (asm != null) asm.scheduleAutoSave();
@@ -310,21 +310,21 @@ public abstract class HudElement extends Module {
      */
     protected void onDragging(EventRender2D e) {
         if (dragging) {
-            // Добавляем отступ от краев элемента
+            
             float padding = 4f;
             float cornerX = getX() - padding;
             float cornerY = getY() - padding;
             float cornerWidth = getWidth() + (padding * 2);
             float cornerHeight = getHeight() + (padding * 2);
             
-            // Используем собственный метод рендеринга закругленных углов
+            
             Render2D.drawRoundedCorner(
                     e.getContext().getMatrices(),
                     cornerX, cornerY,
                     cornerWidth, cornerHeight,
-                    16f, // размер углов
-                    new Color(255, 255, 255, (int) (255 * hoverAnimation.getValue())), // белые углы
-                    2f // толщина линий
+                    16f, 
+                    new Color(255, 255, 255, (int) (255 * hoverAnimation.getValue())), 
+                    2f 
             );
         }
     }

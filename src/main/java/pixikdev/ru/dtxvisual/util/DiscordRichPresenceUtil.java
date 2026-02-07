@@ -12,7 +12,7 @@ public class DiscordRichPresenceUtil {
     }
 
     public static synchronized void startDiscord(String applicationId) {
-        // no-op: отключён Discord RPC
+        
     }
 
     public static synchronized void shutdownDiscord() {

@@ -31,7 +31,7 @@ public class ShiftTap extends Module {
 		MinecraftClient client = MinecraftClient.getInstance();
 		if (self == null || client.player != self) return;
 
-		// Крит возможен, если мы падаем, не на лестнице/воде, не спринтим и не в лодке
+		
 		if (canCrit(self)) {
 			this.sneakTicksLeft = holdTicks.getValue().intValue();
 		}

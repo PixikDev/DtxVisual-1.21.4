@@ -36,7 +36,7 @@ public class AutoSprint extends Module {
         if (!isToggled()) return;
         MinecraftClient client = MinecraftClient.getInstance();
         if (client == null || client.options == null) return;
-        // Имитация зажатой клавиши бега каждый тик
+        
         client.options.sprintKey.setPressed(true);
     }
 }

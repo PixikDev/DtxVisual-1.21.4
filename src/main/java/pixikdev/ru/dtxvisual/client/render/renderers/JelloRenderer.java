@@ -40,7 +40,7 @@ public class JelloRenderer {
                        float animationValue,
                        Color overrideColor) {
         if (target == null && fadeOrigin == null) return;
-        if (animationValue <= 0) return; // Не рендерим если анимация появления/исчезания завершена
+        if (animationValue <= 0) return; 
         
         Vec3d centerWorld = target != null ? target.getLerpedPos(e.getTickDelta()).add(0, target.getHeight() * 0.5, 0) : fadeOrigin;
         var camera = mc.gameRenderer.getCamera();
@@ -49,7 +49,7 @@ public class JelloRenderer {
         double tPosY = centerWorld.y - camera.getPos().y - (target != null ? target.getHeight() : lastKnownHeight) * 0.5;
         double tPosZ = centerWorld.z - camera.getPos().z;
 
-        // Применяем анимацию появления/исчезания к высоте
+        
         float height = (float) jelloHeight * animationValue;
 
         double duration = jelloAnimationSpeed;
@@ -83,23 +83,23 @@ public class JelloRenderer {
         GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
 
         Color themeColor = overrideColor != null ? overrideColor : themeManager.getThemeColor();
-        // Базовые цвета с анимацией появления/исчезания
+        
         int baseBloomColor = new Color(themeColor.getRed(), themeColor.getGreen(), themeColor.getBlue(), clamp255(255 * (jelloGlow ? jelloGlowIntensity : 1.0f))).getRGB();
         int baseCoreColor = new Color(themeColor.getRed(), themeColor.getGreen(), themeColor.getBlue(), clamp255(1)).getRGB();
 
         Matrix4f matrix = matrices.peek().getPositionMatrix();
         int segments = 360;
-        // Применяем анимацию появления/исчезания к масштабу
+        
         float radius = lastKnownWidth * animationValue;
         
-        // Рендерим трэйл из цельных кругов с разными фазами
-        int trailLayers = 6; // Количество слоев трэйла
+        
+        int trailLayers = 6; 
         
         for (int layer = 0; layer < trailLayers; layer++) {
-            // Старые слои становятся более прозрачными
+            
             float layerAlpha = Math.max(0.0f, 1.0f - (layer * 0.2f));
             
-            // Рендерим цельный цилиндр для этого слоя
+            
             RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
             BufferBuilder buffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
             
@@ -108,11 +108,11 @@ public class JelloRenderer {
                 float x = (float) (Math.cos(angle) * radius);
                 float z = (float) (Math.sin(angle) * radius);
 
-                // Применяем альфа слоя к цветам (цельный круг)
+                
                 int finalCoreColor = applyAlphaToColor(baseCoreColor, layerAlpha);
                 int finalBloomColor = applyAlphaToColor(baseBloomColor, layerAlpha);
 
-                // Рендерим боковые стенки цилиндра
+                
                 buffer.vertex(matrix, x, (float) ((height * progress + eased)), z).color(finalCoreColor);
                 buffer.vertex(matrix, x, (float) ((height * progress)), z).color(finalBloomColor);
             }

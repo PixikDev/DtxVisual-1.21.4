@@ -48,8 +48,8 @@ public class   Render2D implements Wrapper {
     }
 
     public void drawBlurredRect(MatrixStack stack, float x, float y, float width, float height, float radius, float blurRadius, Color color) {
-        // Новый лёгкий «blur»: имитация свечения несколькими слоями округлённых прямоугольников
-        // Сохраняем название и сигнатуру, но вместо тяжёлого размытия рисуем 3-4 слоя для мягкого эффекта
+        
+        
         int layers = 3;
         float baseAlpha = color.getAlpha();
         for (int i = 0; i < layers; i++) {
@@ -71,8 +71,8 @@ public class   Render2D implements Wrapper {
     }
 
     public void drawRockstarBlurredRect(MatrixStack stack, float x, float y, float width, float height, float radius, float blurRadius, Color color) {
-        // Новый лёгкий «blur»: имитация свечения несколькими слоями округлённых прямоугольников
-        // Сохраняем название и сигнатуру, но вместо тяжёлого размытия рисуем 3-4 слоя для мягкого эффекта
+        
+        
 //        int layers = 3;
 //        float baseAlpha = color.getAlpha();
 //        for (int i = 0; i < layers; i++) {
@@ -108,8 +108,8 @@ public class   Render2D implements Wrapper {
 //        }
     }
 
-    // Шейдерный blur (использует существующий BuiltBlur конструктор)
-    // Использовать выборочно там, где нужен настоящий blur под шейдером
+    
+    
     public void drawShaderBlurRect(MatrixStack stack, float x, float y, float width, float height, float radius, float blurRadius, Color color) {
         BuiltBlur built = Builder.blur()
                 .size(new SizeState(width, height))
@@ -142,24 +142,24 @@ public class   Render2D implements Wrapper {
         drawBlurredRect(stack, x, y, width, height, radius, 10f, new Color(255, 255, 255, blurAlpha));
         drawRoundedRect(stack, x, y, width, height, radius, color);
     }
-    // Обычный прямоугольник без скругления
+    
     public void drawRect(MatrixStack stack, float x, float y, float width, float height, Color color) {
         BuiltRectangle built = Builder.rectangle()
                 .size(new SizeState(width, height))
-                .radius(new QuadRadiusState(0)) // без скруглений
+                .radius(new QuadRadiusState(0)) 
                 .color(new QuadColorState(color))
                 .build();
         built.render(stack.peek().getPositionMatrix(), x, y);
     }
 
-    // Линейный градиент (слева-направо или сверху-вниз)
+    
     public void drawGradientRect(MatrixStack stack, float x, float y, float width, float height, Color start, Color end, boolean horizontal) {
         QuadColorState quad;
         if (horizontal) {
-            // слева → справа
+            
             quad = new QuadColorState(start, end, end, start);
         } else {
-            // сверху → вниз
+            
             quad = new QuadColorState(start, start, end, end);
         }
 
@@ -233,7 +233,7 @@ public class   Render2D implements Wrapper {
         float dy = y2 - y1;
         float length = (float) Math.sqrt(dx * dx + dy * dy);
 
-        if (length <= 0.5f) return; // слишком короткая линия
+        if (length <= 0.5f) return; 
 
         float angle = (float) Math.atan2(dy, dx);
 
@@ -262,13 +262,13 @@ public class   Render2D implements Wrapper {
          * layers    - количество слоёв размытия
          */
 
-        float step = intensity / layers; // шаг прозрачности для слоёв
-        float blurStep = radius / layers; // шаг радиуса размытия
+        float step = intensity / layers; 
+        float blurStep = radius / layers; 
 
         for (int i = 0; i < layers; i++) {
             float alpha = step * (i + 1);
             float layerRadius = radius + blurStep * i;
-            float offset = i * 2; // смещение слоя, чтобы свечение «разливалось»
+            float offset = i * 2; 
 
             drawBlurredRect(
                     stack,
@@ -297,7 +297,7 @@ public class   Render2D implements Wrapper {
 
         for (int i = layers; i > 0; i--) {
             float factor = i / (float) layers;
-            float offset = i * 1.5f; // смещение слоя
+            float offset = i * 1.5f; 
             int alpha = (int) (glowAlpha * factor);
             drawBlurredRect(
                     stack,
@@ -331,8 +331,8 @@ public class   Render2D implements Wrapper {
                 width + glowRadius * 2,
                 height + glowRadius * 2,
                 radius + glowRadius,
-                1f,          // внутренняя плавность
-                glowRadius,  // внешняя плавность (размытие)
+                1f,          
+                glowRadius,  
                 new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), intensity)
         );
 }
@@ -352,19 +352,19 @@ public class   Render2D implements Wrapper {
         
         float thickness = 2f;
         
-        // Верхний левый угол
+        
         drawRect(stack, x, y, cornerSize, thickness, color);
         drawRect(stack, x, y, thickness, cornerSize, color);
         
-        // Верхний правый угол
+        
         drawRect(stack, x + width - cornerSize, y, cornerSize, thickness, color);
         drawRect(stack, x + width - thickness, y, thickness, cornerSize, color);
         
-        // Нижний левый угол
+        
         drawRect(stack, x, y + height - thickness, cornerSize, thickness, color);
         drawRect(stack, x, y + height - cornerSize, thickness, cornerSize, color);
         
-        // Нижний правый угол
+        
         drawRect(stack, x + width - cornerSize, y + height - thickness, cornerSize, thickness, color);
         drawRect(stack, x + width - thickness, y + height - cornerSize, thickness, cornerSize, color);
     }
@@ -385,22 +385,22 @@ public class   Render2D implements Wrapper {
         
         if (cornerColor.getAlpha() <= 0) return;
         
-        // Настраиваем OpenGL для рендеринга
+        
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(cornerColor.getRed() / 255f, cornerColor.getGreen() / 255f, 
                                    cornerColor.getBlue() / 255f, cornerColor.getAlpha() / 255f);
         
-        // Получаем матрицу
+        
         org.joml.Matrix4f matrix = stack.peek().getPositionMatrix();
         
-        // Рисуем углы как простые L-образные элементы
-        drawCornerElement(matrix, x, y, cornerSize, thickness, true, true); // Верхний левый
-        drawCornerElement(matrix, x + width - cornerSize, y, cornerSize, thickness, false, true); // Верхний правый
-        drawCornerElement(matrix, x, y + height - cornerSize, cornerSize, thickness, true, false); // Нижний левый
-        drawCornerElement(matrix, x + width - cornerSize, y + height - cornerSize, cornerSize, thickness, false, false); // Нижний правый
         
-        // Сбрасываем настройки
+        drawCornerElement(matrix, x, y, cornerSize, thickness, true, true); 
+        drawCornerElement(matrix, x + width - cornerSize, y, cornerSize, thickness, false, true); 
+        drawCornerElement(matrix, x, y + height - cornerSize, cornerSize, thickness, true, false); 
+        drawCornerElement(matrix, x + width - cornerSize, y + height - cornerSize, cornerSize, thickness, false, false); 
+        
+        
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.disableBlend();
     }
@@ -411,7 +411,7 @@ public class   Render2D implements Wrapper {
     private void drawCornerElement(org.joml.Matrix4f matrix, float x, float y, float size, float thickness, 
                                   boolean left, boolean top) {
         
-        // Горизонтальная часть угла
+        
         float hX = left ? x : x + size - thickness;
         float hY = top ? y : y + size - thickness;
         float hWidth = left ? size : thickness;
@@ -419,7 +419,7 @@ public class   Render2D implements Wrapper {
         
         drawQuad(matrix, hX, hY, hWidth, hHeight);
         
-        // Вертикальная часть угла
+        
         float vX = left ? x : x + size - thickness;
         float vY = top ? y : y + size - thickness;
         float vWidth = thickness;

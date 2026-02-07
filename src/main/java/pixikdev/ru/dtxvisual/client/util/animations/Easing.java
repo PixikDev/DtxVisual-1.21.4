@@ -18,7 +18,7 @@ public enum Easing {
 	//(-1, 0.2, 0.75, 1.5)
 	dtxvisual(x -> 3 * Math.pow(1 - x, 2) * x * (-0.2) + 3 * (1 - x) * Math.pow(x, 2) * 1.5 + Math.pow(x, 3)),
 
-	// Новые быстрые easing-функции
+	
 	OUT_QUAD(x -> x * (2 - x)),
 	OUT_QUART(x -> 1 - Math.pow(1 - x, 4)),
 	OUT_EXPO(x -> x == 1 ? 1 : 1 - Math.pow(2, -10 * x)),
@@ -82,7 +82,7 @@ public enum Easing {
 		return function.apply(arg);
 	}
 
-	// Вспомогательный метод для float значений
+	
 	public float apply(float arg) {
 		return function.apply((double) arg).floatValue();
 	}

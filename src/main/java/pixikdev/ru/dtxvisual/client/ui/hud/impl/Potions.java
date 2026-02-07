@@ -30,9 +30,9 @@ public class Potions extends HudElement implements ThemeManager.ThemeChangeListe
 	private final InfinityAnimation heightAnim = new InfinityAnimation(Easing.OUT_QUAD);
 	private final InfinityAnimation widthAnim = new InfinityAnimation(Easing.OUT_QUAD);
 
-	// Per-item анимация 0..1 (1 — полностью видим, 0 — скрыт)
+	
 	private final Map<String, InfinityAnimation> itemAlpha = new LinkedHashMap<>();
-	// Снапшоты последнего названия/иконки для исчезающих
+	
 	private final Map<String, String> lastText = new HashMap<>();
 	private final Map<String, String> lastIconKey = new HashMap<>();
 
@@ -83,10 +83,10 @@ public class Potions extends HudElement implements ThemeManager.ThemeChangeListe
 		Collection<StatusEffectInstance> raw = player.getStatusEffects();
 		boolean hasAny = !raw.isEmpty();
 		boolean chatOpen = mc.currentScreen instanceof net.minecraft.client.gui.screen.ChatScreen;
-		// Без fade: всегда полная альфа для контента и фона
+		
 		int contentHudAlpha = 255;
 
-		// Сбор активных эффектов и стабилизация порядка (по названию)
+		
 		List<StatusEffectInstance> effects = new ArrayList<>();
 		for (StatusEffectInstance eff : raw) {
 			StatusEffect type = eff.getEffectType().value();
@@ -95,7 +95,7 @@ public class Potions extends HudElement implements ThemeManager.ThemeChangeListe
 		}
 		effects.sort(Comparator.comparing(a -> a.getEffectType().value().getName().getString()));
 
-		// Построим списки ключей/текстов/иконок
+		
 		List<String> keys = new ArrayList<>();
 		List<String> texts = new ArrayList<>();
 		List<String> icons = new ArrayList<>();
@@ -106,7 +106,7 @@ public class Potions extends HudElement implements ThemeManager.ThemeChangeListe
 			String display = name + level;
 			Identifier rid = Registries.STATUS_EFFECT.getId(type);
 			String effectKey = rid == null ? "" : rid.getPath();
-			String key = effectKey; // ключ по типу
+			String key = effectKey; 
 			keys.add(key);
 			texts.add(display);
 			icons.add(effectKey);
@@ -114,7 +114,7 @@ public class Potions extends HudElement implements ThemeManager.ThemeChangeListe
 			lastIconKey.put(key, effectKey);
 		}
 
-		// Режим предпросмотра в чате — показать пример, если эффектов нет
+		
 		boolean previewMode = chatOpen && keys.isEmpty();
 		if (previewMode) {
 			keys.add("speed");
@@ -122,17 +122,17 @@ public class Potions extends HudElement implements ThemeManager.ThemeChangeListe
 			icons.add("speed");
 		}
 
-		// Обновляем цели анимации для активных/неактивных
+		
 		for (String k : itemAlpha.keySet()) {
 			boolean active = keys.contains(k);
-			// При очистке — сразу 0
+			
 			itemAlpha.get(k).animate(active ? 1f : 0f, (active ? 220 : (hasAny ? 160 : 0)));
 		}
 		for (String k : keys) {
 			itemAlpha.computeIfAbsent(k, kk -> new InfinityAnimation(Easing.OUT_QUAD)).animate(1f, 220);
 		}
 
-		// Вычисляем размеры (целевые)
+		
 		float posX = getX();
 		float posY = getY();
 		float uiScale = 0.90f;
@@ -151,21 +151,21 @@ public class Potions extends HudElement implements ThemeManager.ThemeChangeListe
 			targetWidth = Math.max(targetWidth, w);
 		}
 
-		// Считаем видимые строки: активные как 1
+		
 		float visibleRows = keys.size();
 		if (previewMode) visibleRows = 1f;
 		float targetHeight = headerH + spacing + Math.max(0, visibleRows) * rowH;
 
-		// Оставляем только зжатие/разжатие окна
+		
 		heightAnim.animate(targetHeight, (hasAny || previewMode) ? 140 : 100);
 		widthAnim.animate(targetWidth, 220);
 		float currentHeight = heightAnim.getValue();
 		float currentWidth = widthAnim.getValue();
 
-		// Не используем fade для скрытия — рисуем во время схлопывания
+		
 		boolean nothingVisible = false;
 
-		// Обновляем границы элемента для корректного перетаскивания/хитбокса
+		
 		setBounds(getX(), getY(), currentWidth, Math.max(headerH + spacing, currentHeight));
 		if (nothingVisible) {
 			super.onRender2D(e);
@@ -189,11 +189,11 @@ public class Potions extends HudElement implements ThemeManager.ThemeChangeListe
 
 		float curY = posY + headerH + spacing;
 
-		// 1) Активные строки (или предпросмотр)
+		
 		for (int i = 0; i < keys.size(); i++) {
 			String k = keys.get(i);
 			InfinityAnimation anim = previewMode ? null : itemAlpha.get(k);
-			// Всегда рисуем сразу
+			
 			float a = 1f;
 			if (a <= 0.01f) a = 0.01f;
 			float xOffset = (previewMode ? 0f : 2f);
@@ -203,12 +203,12 @@ public class Potions extends HudElement implements ThemeManager.ThemeChangeListe
 			StatusEffect type = eff == null ? null : eff.getEffectType().value();
 			boolean negative = type != null && !type.isBeneficial();
 			boolean low = eff != null && eff.getDuration() <= 200;
-            // Берём актуальный акцент из темы на кадр, чтобы поддержать градиенты
+            
             Color liveAccent = themeManager.getCurrentTheme().getAccentColor();
             Color draw = previewMode ? textColor : (low && highlightLowDuration.getValue() ? liveAccent : (negative ? negativeColor.brighter() : textColor));
 
 			String iconKeyActive = icons.get(i) == null ? "" : icons.get(i);
-			// Фиксированная схема: иконка слева, текст справа от иконки независимо от стороны экрана
+			
 			float iconX = (posX + pad + xOffset);
 			float rowCenterY = curY + yAdjust + rowH / 2f;
 			String nameText = texts.get(i) == null ? "" : texts.get(i);
@@ -228,13 +228,13 @@ public class Potions extends HudElement implements ThemeManager.ThemeChangeListe
 						new Color(draw.getRed(), draw.getGreen(), draw.getBlue(), alpha));
 			}
 
-			// Таймер в собственной плашке в общем правом столбике
+			
 			String t = previewMode ? "0:30" : (eff == null ? "" : formatDuration(eff.getDuration()));
 			if (!t.isBlank()) {
 				float tw = Fonts.MEDIUM.getWidth(t, font);
 				float pillW = tw + 6f * uiScale;
 				float pillH = rowH - 4f * uiScale;
-				// Единая правая колонка для всех строк: выравниваем по правому краю панели
+				
 				float rightEdge = posX + currentWidth - pad + 1f * uiScale;
 				float pillX = rightEdge - pillW;
 				float pillY = curY + yAdjust + 2f * uiScale;
@@ -248,7 +248,7 @@ public class Potions extends HudElement implements ThemeManager.ThemeChangeListe
 			curY += rowH;
 		}
 
-		// Убираем рендер исчезающих строк — мгновенное скрытие
+		
 
 		        e.getContext().getMatrices().pop();
         super.onRender2D(e);

@@ -79,7 +79,7 @@ public class ArmorHUD extends HudElement implements ThemeManager.ThemeChangeList
             this.textColor = Color.WHITE;
         }
 
-        this.headerTextColor = this.textColor; // теперь заголовок тоже черный при белой теме
+        this.headerTextColor = this.textColor; 
         this.lowDurabilityColor = new Color(200, 80, 80, 220);
     }
 

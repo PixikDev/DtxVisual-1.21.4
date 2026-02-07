@@ -31,7 +31,7 @@ public class BooleanComponent extends Component {
 
         float ga = Math.max(0f, Math.min(1f, getGlobalAlpha()));
 
-        // Рендер текста
+        
         Render2D.drawFont(context.getMatrices(), Fonts.BOLD.getFont(7.5f),
                 I18n.translate(setting.getName()),
                 x + 4f, y + 3f,
@@ -42,7 +42,7 @@ public class BooleanComponent extends Component {
                         (int) (ThemeManager.getInstance().getCurrentTheme().getTextColor().getAlpha() * ga)
                 ));
 
-        // Получаем цвета темы
+        
         Color accent = ThemeManager.getInstance().getCurrentTheme().getAccentColor();
         // theme text color retrieved inline above; no separate local needed
 
@@ -52,18 +52,18 @@ public class BooleanComponent extends Component {
         float switchY = y + 3f;
         float switchSize = 10f;
 
-        // Безопасное создание цветов
+        
         int alpha = Math.max(0, Math.min(255, (int) (255 * animValue * ga)));
 
-        // Фон переключателя всегда виден с минимальной непрозрачностью
+        
         int backgroundAlpha = (int) (255f * ga);
 
-        // Фон переключателя (всегда виден)
+        
         Render2D.drawRoundedRect(context.getMatrices(),
                 switchX - 2f, switchY - 2f, switchSize + 4f, switchSize + 4f, 2f,
                 new Color(67, 67, 67, backgroundAlpha));
 
-        // Иконка "D"
+        
         if (animValue > 0.1f) {
             Render2D.drawFont(context.getMatrices(), Fonts.ICONS.getFont(switchSize),
                     "D", switchX +1.7f, switchY,

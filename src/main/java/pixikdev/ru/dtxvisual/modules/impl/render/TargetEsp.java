@@ -120,7 +120,7 @@ public class TargetEsp extends Module implements ThemeManager.ThemeChangeListene
     private final Animation jelloAnimation = new Animation(500, 1f, true, Easing.BOTH_SINE);
 
     private LivingEntity lastTarget = null;
-    private LivingEntity fadingTarget = null; // Таргет который исчезает
+    private LivingEntity fadingTarget = null; 
     private long lastSeenTime = 0L;
     private static final long ESP_DURATION = 2500;
     private long lastHitTime = 0L;
@@ -232,20 +232,20 @@ public class TargetEsp extends Module implements ThemeManager.ThemeChangeListene
                         lastTarget = null;
                         fadeOrigin = center;
                         forceFade = true;
-                        fadingTarget = null; // Очищаем fadingTarget
+                        fadingTarget = null; 
                     } else {
                         Vec3d eyes = mc.player.getCameraPosVec(e.getTickDelta());
                         if (isOccluded(eyes, center)) {
                             lastTarget = null;
                             fadeOrigin = center;
                             forceFade = true;
-                            fadingTarget = null; // Очищаем fadingTarget
+                            fadingTarget = null; 
                         } else {
                             lastTarget = living;
                             lastSeenTime = now;
                             forceFade = false;
                             fadeOrigin = null;
-                            fadingTarget = null; // Очищаем fadingTarget при новом таргете
+                            fadingTarget = null; 
 
                             lastKnownCenter = center;
                             lastKnownHeight = living.getHeight();
@@ -272,13 +272,13 @@ public class TargetEsp extends Module implements ThemeManager.ThemeChangeListene
                 lastKnownHeight = lastTarget.getHeight();
                 lastKnownWidth = lastTarget.getWidth();
 
-                fadingTarget = lastTarget; // Сохраняем для анимации
+                fadingTarget = lastTarget; 
                 lastTarget = null;
                 forceFade = true;
             } else {
                 if (isInvisibleAndUnrevealed(lastTarget)) {
                     fadeOrigin = entityCenter(lastTarget, e);
-                    fadingTarget = lastTarget; // Сохраняем для анимации
+                    fadingTarget = lastTarget; 
                     lastTarget = null;
                     forceFade = true;
                 } else {
@@ -286,7 +286,7 @@ public class TargetEsp extends Module implements ThemeManager.ThemeChangeListene
                     Vec3d center = entityCenter(lastTarget, e);
                     if (isOccluded(eyes, center)) {
                         fadeOrigin = center;
-                        fadingTarget = lastTarget; // Сохраняем для анимации
+                        fadingTarget = lastTarget; 
                         lastTarget = null;
                         forceFade = true;
                     } else {
@@ -301,11 +301,11 @@ public class TargetEsp extends Module implements ThemeManager.ThemeChangeListene
         boolean grow = (lastTarget != null) && !forceFade;
         animation.update(grow);
         
-        // Управление анимацией soul эффекта
+        
         boolean soulGrow = (lastTarget != null) && !forceFade;
         soulAnimation.update(soulGrow);
         
-        // Управление анимацией jello эффекта
+        
         boolean jelloGrow = (lastTarget != null) && !forceFade;
         jelloAnimation.update(jelloGrow);
 
@@ -335,13 +335,13 @@ public class TargetEsp extends Module implements ThemeManager.ThemeChangeListene
             fadeOrigin = null;
         }
         
-        // Очищаем fadeOrigin и fadingTarget когда soul анимация завершена
+        
         if (soulAnimation.getValue() <= 0 && forceFade && modeGhosts.getValue()) {
             fadeOrigin = null;
             fadingTarget = null;
         }
         
-        // Очищаем fadeOrigin и fadingTarget когда jello анимация завершена
+        
         if (jelloAnimation.getValue() <= 0 && forceFade && modeJello.getValue()) {
             fadeOrigin = null;
             fadingTarget = null;
@@ -355,9 +355,9 @@ public class TargetEsp extends Module implements ThemeManager.ThemeChangeListene
         if (fullNullCheck()) return;
 
         if (modeGhosts.getValue()) {
-            // Рендерим soul эффект если есть таргет или есть fadingTarget для плавного исчезания
+            
             if (lastTarget != null || (fadingTarget != null && soulAnimation.getValue() > 0)) {
-                // Используем fadingTarget если есть, иначе lastTarget
+                
                 LivingEntity targetToRender = fadingTarget != null ? fadingTarget : lastTarget;
                 soulRenderer.render(
                         e,
@@ -375,9 +375,9 @@ public class TargetEsp extends Module implements ThemeManager.ThemeChangeListene
                 );
             }
         } else if (modeJello.getValue()) {
-            // Рендерим jello эффект с анимацией появления/исчезания
+            
             if (lastTarget != null || (fadingTarget != null && jelloAnimation.getValue() > 0)) {
-                // Используем fadingTarget если есть, иначе lastTarget
+                
                 LivingEntity targetToRender = fadingTarget != null ? fadingTarget : lastTarget;
                 jelloRenderer.render(
                         e,

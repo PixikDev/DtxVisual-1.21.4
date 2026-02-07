@@ -38,14 +38,14 @@ public abstract class EntityRenderDispatcherMixin {
         MinecraftClient mc = MinecraftClient.getInstance();
         float tickDelta = mc.getRenderTickCounter().getTickDelta(true);
         Box worldBox = entity.getBoundingBox().expand(0.0020000000949949026);
-        // Лерпим хитбокс к интерполированной позиции, чтобы убрать рывки
+        
         var lerped = entity.getLerpedPos(tickDelta);
         var current = entity.getPos();
         worldBox = worldBox.offset(lerped.x - current.x, lerped.y - current.y, lerped.z - current.z);
         if (((IWorldRenderer) mc.worldRenderer).getFrustum() != null && !((IWorldRenderer) mc.worldRenderer).getFrustum().isVisible(worldBox)) return;
 
         // Theme colors and fill/outline flags
-        // Получаем актуальный цвет темы (включая градиентные темы)
+        
         Color theme = ThemeManager.getInstance().getCurrentTheme().getBackgroundColor();
         boolean fill = module.fill.getValue();
 
@@ -55,7 +55,7 @@ public abstract class EntityRenderDispatcherMixin {
         // Use dedicated hitbox line queue with its own width
         Render3D.setHitboxLineWidth(module.lineWidth.getValue().floatValue());
 
-        // Добавляем в очереди CustomHitBox (НЕ рендерим сразу)
+        
         MatrixStack ms = new MatrixStack();
         if (fill) Render3D.renderCustomHitboxBox(ms, worldBox, fillColor);
 

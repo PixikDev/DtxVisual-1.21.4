@@ -8,12 +8,12 @@ import java.util.function.Supplier;
  * Настройка цвета (RGB) с кэшированием
  */
 public class ColorSetting extends Setting<Integer> {
-    private Integer cachedValue;// Хранение родительского модуля для возможного использования
-    private Runnable onAction; // Хранение действия для onAction
-    private Runnable onSetVisible; // Хранение действия для onSetVisible
+    private Integer cachedValue;
+    private Runnable onAction; 
+    private Runnable onSetVisible; 
 
     public ColorSetting(String name) {
-        super(name, Color.RED.getRGB()); // По умолчанию красный цвет
+        super(name, Color.RED.getRGB()); 
         this.cachedValue = Color.RED.getRGB();
     }
 
@@ -23,33 +23,33 @@ public class ColorSetting extends Setting<Integer> {
     }
 
     public ColorSetting set(Integer value) {
-        super.setValue(value); // Вызов метода setValue из Setting
+        super.setValue(value); 
         this.cachedValue = value;
         if (onAction != null) {
-            onAction.run(); // Выполнение зарегистрированного действия
+            onAction.run(); 
         }
-        return this; // Поддержка цепочки вызовов
+        return this; 
     }
 
-    // Исправление: использование сеттера setVisible вместо прямого доступа к полю visible
+    
     @Override
     public void setVisible(Supplier<Boolean> visible) {
-        super.setVisible(visible); // Вызов публичного сеттера из Setting
+        super.setVisible(visible); 
         if (onSetVisible != null) {
-            onSetVisible.run(); // Исправлено: onVisible → onSetVisible
+            onSetVisible.run(); 
         }
     }
 
-    // Реализация onAction, так как метода нет в Setting
+    
     public ColorSetting onAction(Runnable action) {
-        this.onAction = action; // Сохранение действия
-        return this; // Поддержка цепочки вызовов
+        this.onAction = action; 
+        return this; 
     }
 
-    // Реализация onSetVisible, так как метода нет в Setting
+    
     public ColorSetting onSetVisible(Runnable action) {
-        this.onSetVisible = action; // Сохранение действия
-        return this; // Поддержка цепочки вызовов
+        this.onSetVisible = action; 
+        return this; 
     }
 
     @Override

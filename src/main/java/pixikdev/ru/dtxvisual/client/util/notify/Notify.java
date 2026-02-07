@@ -39,7 +39,7 @@ public class Notify implements Wrapper {
         float animA = (float) animation.getValue();
         int bgA = (int) (175 * animA);
         int blurA = (int) (40 * animA);
-        // Мягкий шейдерный blur-ореол позади + тёмная подложка сверху
+        
         Render2D.drawShaderBlurRect(
                 e.getContext().getMatrices(),
                 x - 3.5f,

@@ -27,10 +27,10 @@ public class ResetCommand extends Command {
                 return 1;
             }
 
-            // сбрасываем префикс на точку (команда .reset всегда доступна через точку)
+            
             DtxVisual.getInstance().getCommandManager().setPrefix(".");
 
-            // Сбрасываем все модули
+            
             for (Module module : DtxVisual.getInstance().getModuleManager().getModules()) {
                 if (module.isToggled()) module.setToggled(false);
                 for (Setting<?> setting : module.getSettings()) {
@@ -38,10 +38,10 @@ public class ResetCommand extends Command {
                 }
             }
 
-            // Сбрасываем бинды к изначальным
+            
             DtxVisual.getInstance().getModuleManager().resetBindsToDefaults();
 
-            // Сбрасываем HUD
+            
             for (HudElement hud : DtxVisual.getInstance().getHudManager().getHudElements()) {
                 for (Setting<?> setting : hud.getSettings()) {
                     setting.reset();
@@ -49,7 +49,7 @@ public class ResetCommand extends Command {
                 if (!hud.isToggled()) hud.setToggled(true);
             }
 
-            // Сбрасываем тему на дефолтную
+            
             try {
                 ThemeManager.getInstance().setTheme(new ThemeManager.LightTheme());
             } catch (Throwable ignored) {}

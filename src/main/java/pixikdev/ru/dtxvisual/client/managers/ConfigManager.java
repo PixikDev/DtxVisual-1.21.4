@@ -43,7 +43,7 @@ public class ConfigManager implements Wrapper {
         }
         LOGGER.info("Путь к папке конфигураций: {}", this.configsDir.getAbsolutePath());
         
-        // Настройка Gson для красивого форматирования
+        
         this.gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .setLenient()
@@ -64,28 +64,28 @@ public class ConfigManager implements Wrapper {
                     configData.setCommandPrefix(pref);
                 } catch (Exception ignored) {}
                 
-                // Сохраняем состояние всех модулей
+                
                 for (Module module : DtxVisual.getInstance().getModuleManager().getModules()) {
                     ModuleData moduleData = new ModuleData();
                     moduleData.setToggled(module.isToggled());
                     moduleData.setBind(module.getBind());
                     
-                    // Сохраняем все настройки модуля
+                    
                     Map<String, Object> settings = new HashMap<>();
                     for (Setting<?> setting : module.getSettings()) {
                         Object value = setting.getValue();
                         
-                        // Специальная обработка для разных типов настроек
+                        
                         if (setting instanceof ColorSetting) {
-                            // Сохраняем цвет как hex строку
+                            
                             value = String.format("%06X", (Integer) value);
                         } else if (setting instanceof BindSetting) {
-                            // Сохраняем бинд как строку "key:isMouse:mode"
+                            
                             Bind bind = (Bind) value;
                             String modeName = bind.getMode() != null ? bind.getMode().name() : Bind.Mode.TOGGLE.name();
                             value = bind.getKey() + ":" + bind.isMouse() + ":" + modeName;
                         } else if (setting instanceof ListSetting) {
-                            // Сохраняем ListSetting как Map с именами и значениями
+                            
                             ListSetting listSetting = (ListSetting) setting;
                             Map<String, Boolean> listValues = new HashMap<>();
                             for (BooleanSetting boolSetting : listSetting.getValue()) {
@@ -101,10 +101,10 @@ public class ConfigManager implements Wrapper {
                     configData.getModules().put(module.getName(), moduleData);
                 }
                 
-                // Сохраняем выбранную тему
+                
                 configData.setCurrentTheme(ThemeManager.getInstance().getCurrentTheme().getName());
                 
-                // Сохраняем положение HUD элементов
+                
                 Map<String, HudPositionData> hudPositions = new HashMap<>();
                 for (HudElement hudElement : DtxVisual.getInstance().getHudManager().getHudElements()) {
                     HudPositionData hudData = new HudPositionData();
@@ -123,7 +123,7 @@ public class ConfigManager implements Wrapper {
                 }
                 configData.setHudPositions(hudPositions);
                 
-                // Сохраняем настройки HUD-элементов
+                
                 Map<String, Map<String, Object>> hudSettings = new HashMap<>();
                 for (HudElement hudElement : DtxVisual.getInstance().getHudManager().getHudElements()) {
                     Map<String, Object> settings = new HashMap<>();
@@ -149,12 +149,12 @@ public class ConfigManager implements Wrapper {
                 }
                 configData.setHudSettings(hudSettings);
                 
-                // Сохраняем в файл
+                
                 File configFile = new File(configsDir, configName + ".simple");
                 String json = gson.toJson(configData);
                 Files.write(configFile.toPath(), json.getBytes(StandardCharsets.UTF_8));
                 
-                // Кэшируем конфигурацию
+                
                 configCache.put(configName, configData);
                 
                 LOGGER.info("Конфигурация '{}' успешно сохранена", configName);
@@ -171,7 +171,7 @@ public class ConfigManager implements Wrapper {
      * Загружает конфигурацию из файла
      */
     public CompletableFuture<Boolean> loadConfig(String configName) {
-        // 1) Чтение файла и парсинг в фоне
+        
         return CompletableFuture.supplyAsync(() -> {
             try {
                 File configFile = new File(configsDir, configName + ".simple");
@@ -186,7 +186,7 @@ public class ConfigManager implements Wrapper {
                 return null;
             }
         }).thenCompose(configData -> {
-            // 2) Применение строго на рендер-потоке
+            
             CompletableFuture<Boolean> result = new CompletableFuture<>();
             if (configData == null) {
                 result.complete(false);
@@ -201,24 +201,24 @@ public class ConfigManager implements Wrapper {
                             DtxVisual.getInstance().getCommandManager().setPrefix(pref);
                         }
                     } catch (Exception ignored) {}
-                    // Применяем конфигурацию к модулям
+                    
                     for (Map.Entry<String, ModuleData> entry : configData.getModules().entrySet()) {
                         String moduleName = entry.getKey();
                         ModuleData moduleData = entry.getValue();
                         
                         Module module = DtxVisual.getInstance().getModuleManager().getModuleByName(moduleName);
                         if (module != null) {
-                            // Применяем состояние модуля
+                            
                             if (moduleData.isToggled() != module.isToggled()) {
                                 module.setToggled(moduleData.isToggled());
                             }
                             
-                            // Применяем бинд
+                            
                             if (moduleData.getBind() != null) {
                                 module.setBind(moduleData.getBind());
                             }
                             
-                            // Применяем настройки
+                            
                             for (Map.Entry<String, Object> settingEntry : moduleData.getSettings().entrySet()) {
                                 String settingName = settingEntry.getKey();
                                 Object value = settingEntry.getValue();
@@ -230,7 +230,7 @@ public class ConfigManager implements Wrapper {
                                 
                                 if (setting != null) {
                                     try {
-                                        // Безопасно устанавливаем значение
+                                        
                                         setSettingValue(setting, value);
                                     } catch (Exception e) {
                                         LOGGER.warn("Не удалось применить настройку {} для модуля {}: {}", 
@@ -241,7 +241,7 @@ public class ConfigManager implements Wrapper {
                         }
                     }
                     
-                    // Применяем выбранную тему
+                    
                     try {
                         ThemeManager themeManager = ThemeManager.getInstance();
                         ThemeManager.Theme[] availableThemes = themeManager.getAvailableThemes();
@@ -256,7 +256,7 @@ public class ConfigManager implements Wrapper {
                         LOGGER.warn("Не удалось применить тему {}: {}", configData.getCurrentTheme(), e.getMessage());
                     }
                     
-                    // Применяем положение HUD элементов
+                    
                     if (configData.getHudPositions() != null) {
                         try {
                             for (Map.Entry<String, HudPositionData> entry : configData.getHudPositions().entrySet()) {
@@ -289,7 +289,7 @@ public class ConfigManager implements Wrapper {
                         }
                     }
                     
-                    // Применяем настройки HUD-элементов
+                    
                     if (configData.getHudSettings() != null) {
                         for (Map.Entry<String, Map<String, Object>> entry : configData.getHudSettings().entrySet()) {
                             String hudName = entry.getKey();
@@ -318,7 +318,7 @@ public class ConfigManager implements Wrapper {
                         }
                     }
                     
-                    // Кэшируем конфигурацию
+                    
                     configCache.put(configName, configData);
                     LOGGER.info("Конфигурация '{}' успешно загружена", configName);
                     result.complete(true);
@@ -400,7 +400,7 @@ public class ConfigManager implements Wrapper {
             if (value instanceof String) {
                 EnumSetting<?> enumSetting = (EnumSetting<?>) setting;
                 try {
-                    // Используем метод setEnumValue для установки значения по строке
+                    
                     enumSetting.setEnumValue((String) value);
                 } catch (Exception e) {
                     LOGGER.warn("Неверное значение enum: {}", value);

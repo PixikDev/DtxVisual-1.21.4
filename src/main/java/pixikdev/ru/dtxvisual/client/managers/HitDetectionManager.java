@@ -14,10 +14,10 @@ public class HitDetectionManager {
     
     private static HitDetectionManager instance;
     
-    // Погрешность в наносекундах (5ms = 5 миллисекунд)
-    private static final long HIT_TOLERANCE_NANOS = 5_000_000L; // 5 миллисекунд в наносекундах
     
-    // Хранит время последнего удара для каждой пары игрок-цель
+    private static final long HIT_TOLERANCE_NANOS = 5_000_000L; 
+    
+    
     private final Map<String, Long> lastHitTimes = new ConcurrentHashMap<>();
     
     private HitDetectionManager() {}
@@ -37,7 +37,7 @@ public class HitDetectionManager {
      */
     public boolean canProcessHit(PlayerEntity attacker, Entity target) {
         if (attacker == null || target == null) {
-            return true; // Если данные некорректны, разрешаем обработку
+            return true; 
         }
         
         String hitKey = generateHitKey(attacker, target);
@@ -45,18 +45,18 @@ public class HitDetectionManager {
         
         Long lastHitTime = lastHitTimes.get(hitKey);
         if (lastHitTime == null) {
-            // Первый удар по этой цели
+            
             return true;
         }
         
         long timeDifference = currentTime - lastHitTime;
         
         if (timeDifference >= HIT_TOLERANCE_NANOS) {
-            // Прошло достаточно времени, разрешаем обработку
+            
             return true;
         }
         
-        // Удар произошел слишком рано, игнорируем
+        
         return false;
     }
     
@@ -80,7 +80,7 @@ public class HitDetectionManager {
      */
     public void cleanup() {
         long currentTime = System.nanoTime();
-        long maxAge = 1_000_000_000L; // 1 секунда в наносекундах
+        long maxAge = 1_000_000_000L; 
         
         lastHitTimes.entrySet().removeIf(entry -> 
             (currentTime - entry.getValue()) > maxAge
@@ -110,9 +110,9 @@ public class HitDetectionManager {
         String hitKey = generateHitKey(attacker, target);
         Long lastHitTime = lastHitTimes.get(hitKey);
         if (lastHitTime == null) {
-            return Double.MAX_VALUE; // Никогда не было удара
+            return Double.MAX_VALUE; 
         }
-        return (System.nanoTime() - lastHitTime) / 1_000_000.0; // Конвертируем в миллисекунды
+        return (System.nanoTime() - lastHitTime) / 1_000_000.0; 
     }
     
     /**

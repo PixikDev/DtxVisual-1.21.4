@@ -68,7 +68,7 @@ public class Watermark extends HudElement implements ThemeManager.ThemeChangeLis
 
             Color liveAccent = themeManager != null ? themeManager.getCurrentTheme().getAccentColor() : accentColor;
 
-            // Основной фон
+            
             Render2D.drawRoundedRect(
                     matrices,
                     getX(), getY(),
@@ -77,11 +77,11 @@ public class Watermark extends HudElement implements ThemeManager.ThemeChangeLis
                     bgColor
             );
 
-            // Логотип с эффектом
+            
             float logoX = getX() + paddingX;
             float logoY = getY() + (totalHeight - logoSize) / 2f;
 
-            // Эффект свечения
+            
             Render2D.drawRoundedRect(
                     matrices,
                     logoX - 0.5f, logoY - 0.5f,
@@ -90,7 +90,7 @@ public class Watermark extends HudElement implements ThemeManager.ThemeChangeLis
                     new Color(liveAccent.getRed(), liveAccent.getGreen(), liveAccent.getBlue(), 80)
             );
 
-            // Основной логотип
+            
             Render2D.drawRoundedRect(
                     matrices,
                     logoX, logoY,
@@ -99,7 +99,7 @@ public class Watermark extends HudElement implements ThemeManager.ThemeChangeLis
                     liveAccent
             );
 
-            // Буква D в логотипе
+            
             Render2D.drawFont(
                     matrices,
                     fontIcons.getFont(logoSize * 0.65f),
@@ -109,11 +109,11 @@ public class Watermark extends HudElement implements ThemeManager.ThemeChangeLis
                     Color.WHITE
             );
 
-            // Текст
+            
             float textX = getX() + paddingX + logoSize + 9;
             float textY = getY() + paddingY;
 
-            // Заголовок
+            
             Render2D.drawFont(
                     matrices,
                     fontBold.getFont(fontSizeTitle),
@@ -123,7 +123,7 @@ public class Watermark extends HudElement implements ThemeManager.ThemeChangeLis
                     Color.WHITE
             );
 
-            // Версия
+            
             Render2D.drawFont(
                     matrices,
                     fontRegular.getFont(fontSizeVersion),
@@ -133,7 +133,7 @@ public class Watermark extends HudElement implements ThemeManager.ThemeChangeLis
                     new Color(170, 170, 170)
             );
 
-            // Ссылка
+            
             Render2D.drawFont(
                     matrices,
                     fontRegular.getFont(fontSizeLink),
