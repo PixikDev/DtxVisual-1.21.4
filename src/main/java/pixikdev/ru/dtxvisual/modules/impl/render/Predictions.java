@@ -55,6 +55,7 @@ public class Predictions extends Module implements ThemeManager.ThemeChangeListe
     private final BooleanSetting showLandingInfo = new BooleanSetting("Show Landing Info", true, () -> true);
     private final BooleanSetting highlightPlayers = new BooleanSetting("Highlight Players", true, () -> true);
     private static final double highlightRange = 100f;
+
     // Simulation parameters
     private static final int MAX_TICKS = 240;
     private static final int SUBSTEPS = 8;
@@ -86,7 +87,7 @@ public class Predictions extends Module implements ThemeManager.ThemeChangeListe
 
     @Override
     public void onThemeChanged(ThemeManager.Theme theme) {
-        this.currentColor = theme.getBackgroundColor();
+        this.currentColor = theme.getAccentColor();
         this.currentColorSecondary = theme.getSecondaryBackgroundColor();
     }
 
@@ -102,7 +103,7 @@ public class Predictions extends Module implements ThemeManager.ThemeChangeListe
     public void onRender2D(EventRender2D e) {
         if (fullNullCheck()) return;
 
-        // Only draw landing info in 2D HUD; 3D path is rendered in onRender3D now
+        // Only draw landing info in 2D HUD
         if (showLandingInfo.getValue() && !projectilePoints.isEmpty()) {
             renderLandingInfo2D(e);
         }
@@ -115,7 +116,7 @@ public class Predictions extends Module implements ThemeManager.ThemeChangeListe
         // Attach current tick delta for smooth helpers
         Render3D.setTickDelta(e.getTickDelta());
 
-        // Recompute prediction points in 3D phase so trajectory can be drawn in world space
+        // Recompute prediction points in 3D phase
         prevProjectilePoints.clear();
         prevProjectilePoints.addAll(projectilePoints);
         projectilePoints.clear();
@@ -127,7 +128,6 @@ public class Predictions extends Module implements ThemeManager.ThemeChangeListe
                 boolean isPlayerThrown = pearl.getOwner() != null && pearl.getOwner() == mc.player;
                 hasPlayerProjectiles |= isPlayerThrown;
                 simulatePearl(pearl, isPlayerThrown);
-                // track last throw time removed; no cooldown UI currently
             } else if (ent instanceof ArrowEntity arrow && (arrow.getOwner() != null) && (showBow.getValue() || showCrossbow.getValue())) {
                 boolean isMoving = !arrow.isOnGround() && !arrow.isTouchingWater() && arrow.getVelocity().lengthSquared() >= 0.01;
                 if (isMoving) {
@@ -483,12 +483,10 @@ public class Predictions extends Module implements ThemeManager.ThemeChangeListe
     }
 
     private void renderProjectileTrajectory3D(EventRender3D.Game e, boolean hasFlyingProjectiles) {
-        // Group previous and current points into trajectories for interpolation
         List<List<ProjectilePoint>> trajectories = groupTrajectories(projectilePoints);
         List<List<ProjectilePoint>> prevTrajectories = groupTrajectories(prevProjectilePoints);
         float tickDelta = e.getTickDelta();
 
-        // Draw in world space via Render3D batching
         Render3D.prepare();
         Render3D.DEBUG_LINE_WIDTH = BASE_LINE_WIDTH;
 
@@ -501,20 +499,17 @@ public class Predictions extends Module implements ThemeManager.ThemeChangeListe
             for (int i = 1; i < trajectory.size(); i++) {
                 Vec3d currPos = interpolatePoint(prevTrajectory, trajectory, i, tickDelta);
 
-                // Theme color with smooth alpha fade towards the tail and gradient
                 float t = (float) i / (float) trajectory.size();
-                
-                
+
                 int r = (int) (currentColor.getRed() * (1.0f - t) + currentColorSecondary.getRed() * t);
                 int gg = (int) (currentColor.getGreen() * (1.0f - t) + currentColorSecondary.getGreen() * t);
                 int b = (int) (currentColor.getBlue() * (1.0f - t) + currentColorSecondary.getBlue() * t);
-                int a = (int) (255.0f * (1.0f - t)); // head opaque -> tail transparent
+                int a = (int) (255.0f * (1.0f - t));
                 a = Math.max(24, Math.min(255, a));
                 int argb = new Color(r, gg, b, a).getRGB();
 
                 Render3D.drawLine(prevPos, currPos, argb, BASE_LINE_WIDTH);
 
-                // Draw hit entity box for player-thrown projectiles at landing with gradient
                 if (trajectory.get(i).isPlayerThrown() && trajectory.get(i).hitEntity() != null && trajectory.get(i).isLandingPoint()) {
                     Entity hitEntity = trajectory.get(i).hitEntity();
                     if (hitEntity instanceof LivingEntity living && living.isAlive()) {
@@ -556,7 +551,6 @@ public class Predictions extends Module implements ThemeManager.ThemeChangeListe
         if (prev == null || prev.isEmpty()) return c;
         int prevIndex = Math.min(index, prev.size() - 1);
         Vec3d p = prev.get(prevIndex).pos();
-        // Ease-out for smoother perceived motion within tick
         float tt = 1.0f - (float) Math.pow(1.0f - Math.min(Math.max(t, 0.0f), 1.0f), 3.0);
         double x = p.x + (c.x - p.x) * tt;
         double y = p.y + (c.y - p.y) * tt;
@@ -571,24 +565,13 @@ public class Predictions extends Module implements ThemeManager.ThemeChangeListe
                 Vec3d pos = pp.pos;
                 Vec3d lp = WorldUtils.getPosition(pos);
                 if (lp.z > 0 && lp.z < 1) {
-                    double timeSec = pp.ticks / 20.0;
-                    String timeText = String.format("%.1f s", timeSec);
-
-                    int boxX = (int) lp.x - 20;
-                    int boxY = (int) lp.y + 4;
-                    int boxW = 40;
-                    int boxH = 15;
-                    int cornerRadius = 3;
-                    float fontSize = 7.5f;
-
-                    Render2D.drawRoundedRect(ms, boxX, boxY, boxW, boxH-1, cornerRadius, new Color(0, 0, 0, 150));
-
-                    ms.push();
-                    float scale = 0.6f;
+                    float scale = 0.75f;
                     int itemSize = 16;
                     int scaledItemSize = (int) (itemSize * scale);
-                    int itemX = boxX + (boxW / 2) - (scaledItemSize / 2);
-                    int itemY = boxY + (boxH / 2) - (scaledItemSize / 2);
+                    int itemX = (int) (lp.x - scaledItemSize / 2);
+                    int itemY = (int) (lp.y - scaledItemSize / 2);
+
+                    ms.push();
                     ms.translate(itemX, itemY, 0);
                     ms.scale(scale, scale, 1.0f);
 
@@ -600,17 +583,8 @@ public class Predictions extends Module implements ThemeManager.ThemeChangeListe
                         default -> itemStack = new ItemStack(Items.ARROW);
                     }
 
-                    e.getContext().drawItem(itemStack, 0 - 20, 0 - 1);
+                    e.getContext().drawItem(itemStack, 0, 0);
                     ms.pop();
-
-                    Render2D.drawFont(
-                            ms,
-                            Fonts.MEDIUM.getFont(fontSize),
-                            timeText,
-                            boxX + 18,
-                            boxY + boxH / 2f - Fonts.MEDIUM.getHeight(fontSize) / 2f,
-                            new Color(255, 255, 255, 255)
-                    );
                 }
             }
         }

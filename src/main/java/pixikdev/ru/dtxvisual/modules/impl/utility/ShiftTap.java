@@ -10,14 +10,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
-/**
- * ShiftTap: кратковременно зажимает Shift (sneak) при критическом ударе
- */
 public class ShiftTap extends Module {
 
 	private final NumberSetting holdTicks = new NumberSetting("setting.holdTicks", 3, 1, 8, 1);
 	private int sneakTicksLeft = 0;
 	private boolean forcedSneak = false;
+	private boolean shouldCrit = false;
 
 	public ShiftTap() {
 		super("ShiftTap", Category.Utility, net.minecraft.client.resource.language.I18n.translate("module.shifttap.description"));
@@ -31,8 +29,8 @@ public class ShiftTap extends Module {
 		MinecraftClient client = MinecraftClient.getInstance();
 		if (self == null || client.player != self) return;
 
-		
-		if (canCrit(self)) {
+		shouldCrit = canCrit(self);
+		if (shouldCrit) {
 			this.sneakTicksLeft = holdTicks.getValue().intValue();
 		}
 	}
@@ -50,6 +48,7 @@ public class ShiftTap extends Module {
 		} else if (forcedSneak) {
 			client.options.sneakKey.setPressed(false);
 			forcedSneak = false;
+			shouldCrit = false;
 		}
 	}
 
@@ -61,4 +60,16 @@ public class ShiftTap extends Module {
 		if (player.isSprinting()) return false;
 		return true;
 	}
-} 
+
+	@Override
+	public void onDisable() {
+		super.onDisable();
+		MinecraftClient client = MinecraftClient.getInstance();
+		if (client != null) {
+			client.options.sneakKey.setPressed(false);
+		}
+		forcedSneak = false;
+		sneakTicksLeft = 0;
+		shouldCrit = false;
+	}
+}

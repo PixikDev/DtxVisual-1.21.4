@@ -191,7 +191,7 @@
   "module.betterminecraft.description": "Улучшает интерфейс Minecraft",
   "module.aspectratio.description": "Растягивает экран",
   "module.shifttap.description": "Нажимает Shift при ударе",
-  "module.trails.description": "Рисует за игроками плавный шлейф",
+  "module.trails.description": "Рисует за тобой плавный трейл",
   "setting.trails.length": "Длина",
   "setting.trails.width": "Ширина шлейфа",
   "setting.trails.lifetime": "Время жизни шлейфа (мс)",
@@ -295,5 +295,7 @@
   "Highlight Players": "Светить игроков",
   "Highlight Range": "Дистанция подсветки",
 
-  "RMB.setting": "ПКМ для настройки"
+  "RMB.setting": "ПКМ для настройки",
+  "TargetHud": "Target HUD",
+  "Predictions": "Predictions"
 }
