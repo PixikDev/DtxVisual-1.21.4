@@ -249,8 +249,8 @@
   "cfg.deleted": "§aКонфигурация '%s' успешно удалена!",
   "cfg.deleteError": "§cОшибка при удалении конфигурации '%s'",
   "cfg.info.header": "§6=== Информация о конфигурации '%s' ===",
-  "cfg.info.file": "§7Файл: §e%s.simple",
-  "cfg.info.path": "§7Путь: §e%s/%s.simple",
+  "cfg.info.file": "§7Файл: §e%s.dtx",
+  "cfg.info.path": "§7Путь: §e%s/%s.dtx",
   "cfg.info.exists": "§7Статус: §aСуществует",
 
   "death.coords": "§6[Смерть] §cX: %.0f Y: %.0f Z: %.0f",

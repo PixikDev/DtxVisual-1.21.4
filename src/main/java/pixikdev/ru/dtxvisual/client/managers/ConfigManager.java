@@ -150,7 +150,7 @@ public class ConfigManager implements Wrapper {
                 configData.setHudSettings(hudSettings);
                 
                 
-                File configFile = new File(configsDir, configName + ".simple");
+                File configFile = new File(configsDir, configName + ".dtx");
                 String json = gson.toJson(configData);
                 Files.write(configFile.toPath(), json.getBytes(StandardCharsets.UTF_8));
                 
@@ -174,7 +174,7 @@ public class ConfigManager implements Wrapper {
         
         return CompletableFuture.supplyAsync(() -> {
             try {
-                File configFile = new File(configsDir, configName + ".simple");
+                File configFile = new File(configsDir, configName + ".dtx");
                 if (!configFile.exists()) {
                     LOGGER.error("Конфигурация '{}' не найдена", configName);
                     return null;
@@ -335,12 +335,12 @@ public class ConfigManager implements Wrapper {
      * Получает список всех доступных конфигураций
      */
     public String[] getConfigList() {
-        File[] files = configsDir.listFiles((dir, name) -> name.endsWith(".simple"));
+        File[] files = configsDir.listFiles((dir, name) -> name.endsWith(".dtx"));
         if (files == null) return new String[0];
         
         String[] configs = new String[files.length];
         for (int i = 0; i < files.length; i++) {
-            configs[i] = files[i].getName().replace(".simple", "");
+            configs[i] = files[i].getName().replace(".dtx", "");
         }
         return configs;
     }
@@ -356,7 +356,7 @@ public class ConfigManager implements Wrapper {
      * Удаляет конфигурацию
      */
     public boolean deleteConfig(String configName) {
-        File configFile = new File(configsDir, configName + ".simple");
+        File configFile = new File(configsDir, configName + ".dtx");
         if (configFile.exists()) {
             boolean deleted = configFile.delete();
             if (deleted) {
@@ -372,7 +372,7 @@ public class ConfigManager implements Wrapper {
      * Проверяет существование конфигурации
      */
     public boolean configExists(String configName) {
-        return new File(configsDir, configName + ".simple").exists();
+        return new File(configsDir, configName + ".dtx").exists();
     }
     
     /**

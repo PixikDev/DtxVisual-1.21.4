@@ -239,8 +239,8 @@
   "cfg.deleted": "§aConfiguration '%s' deleted successfully!",
   "cfg.deleteError": "§cError deleting configuration '%s'",
   "cfg.info.header": "§6=== Info for configuration '%s' ===",
-  "cfg.info.file": "§7File: §e%s.simple",
-  "cfg.info.path": "§7Path: §e%s/%s.simple",
+  "cfg.info.file": "§7File: §e%s.dtx",
+  "cfg.info.path": "§7Path: §e%s/%s.dtx",
   "cfg.info.exists": "§7Status: §aExists",
 
   "death.coords": "§6[Death] §cX: %.0f Y: %.0f Z: %.0f",

@@ -226,8 +226,8 @@ public class ConfigAliasCommand extends Command {
         }
         
         ChatUtils.sendMessage("§6=== Информация о конфигурации '" + configName + "' ===");
-        ChatUtils.sendMessage("§7Файл: §e" + configName + ".simple");
-        ChatUtils.sendMessage("§7Путь: §e" + configManager.getConfigsDirectory() + "/" + configName + ".simple");
+        ChatUtils.sendMessage("§7Файл: §e" + configName + ".dtx");
+        ChatUtils.sendMessage("§7Путь: §e" + configManager.getConfigsDirectory() + "/" + configName + ".dtx");
         ChatUtils.sendMessage("§7Статус: §aСуществует");
     }
     
