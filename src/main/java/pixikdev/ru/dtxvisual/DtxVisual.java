@@ -65,7 +65,6 @@ public class DtxVisual implements ModInitializer, Wrapper {
         clickGui = new ClickGui();
         hudManager = new HudManager();
 
-        // Always-on waypoint overlay
         waypointOverlay = new WaypointOverlay();
         eventHandler.subscribe(waypointOverlay);
 
@@ -82,7 +81,6 @@ public class DtxVisual implements ModInitializer, Wrapper {
     }
 
     public static Identifier id(String path) {
-        // Unified resource namespace for this mod
         return Identifier.of("dtxvisual", path);
     }
 }
