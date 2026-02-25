@@ -12,7 +12,7 @@ import java.util.concurrent.*;
 public final class Async {
     private Async() {}
 
-    private static final ExecutorService CPU_POOL;
+    private static final ThreadPoolExecutor CPU_POOL;
     private static final java.util.concurrent.atomic.AtomicInteger THREAD_ID = new java.util.concurrent.atomic.AtomicInteger(1);
 
     static {
@@ -31,6 +31,8 @@ public final class Async {
                 },
                 new ThreadPoolExecutor.DiscardOldestPolicy()
         );
+        // Warm up worker threads to avoid first-use hitches during gameplay.
+        CPU_POOL.prestartAllCoreThreads();
     }
 
     public static <T> Future<T> submit(Callable<T> task) {
@@ -41,6 +43,14 @@ public final class Async {
     public static Future<?> run(Runnable task) {
         Objects.requireNonNull(task, "task");
         return CPU_POOL.submit(task);
+    }
+
+    /**
+     * Fire-and-forget path with no Future allocation.
+     */
+    public static void execute(Runnable task) {
+        Objects.requireNonNull(task, "task");
+        CPU_POOL.execute(task);
     }
 
     public static <T> List<T> awaitAll(List<Future<T>> futures, long timeout, TimeUnit unit) {

@@ -11,6 +11,8 @@ import pixikdev.ru.dtxvisual.modules.settings.impl.BooleanSetting;
 import pixikdev.ru.dtxvisual.modules.settings.impl.NumberSetting;
 import pixikdev.ru.dtxvisual.modules.settings.impl.ListSetting;
 import pixikdev.ru.dtxvisual.mixin.accessors.IWorldRenderer;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Entity;
@@ -93,13 +95,13 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
 
         boolean legacyMode = mode.getName("mode.legacy") != null && mode.getName("mode.legacy").getValue();
 
-		int spawnCount = Math.round(dmgCount.getValue());
+		int spawnCount = Math.max(1, Math.round(dmgCount.getValue() / 3.0f));
         if (legacyMode) {
             Vec3d base = entity.getPos().add(0, entity.getHeight() / 2f, 0);
             for (int i = 0; i < spawnCount; i++) {
                 ensureSpace();
                 Identifier tex = textures.get(ThreadLocalRandom.current().nextInt(textures.size()));
-                long lifeMs = (long) (lifeTimeSec.getValue() * 1000L);
+                long lifeMs = Math.max(1L, (long) (lifeTimeSec.getValue() * 1000L / 3.0));
                 Particle p = Particle.createLegacy(this, base, tex, lifeMs, scatterStrength.getValue());
                 particles.add(p);
             }
@@ -132,7 +134,7 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
         for (int i = 0; i < spawnCount; i++) {
             ensureSpace();
             Identifier tex = textures.get(ThreadLocalRandom.current().nextInt(textures.size()));
-            long lifeMs = (long) (lifeTimeSec.getValue() * 1000L);
+            long lifeMs = Math.max(1L, (long) (lifeTimeSec.getValue() * 1000L / 3.0));
             Particle p = Particle.createDamage(this, base, tex, lifeMs, scatterStrength.getValue(), preferredDir);
             particles.add(p);
         }
@@ -152,6 +154,7 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
         if (fullNullCheck()) return;
 
         long now = System.currentTimeMillis();
+        long nowNanos = System.nanoTime();
 
         boolean bouncyMode = mode.getName("mode.bouncy") != null && mode.getName("mode.bouncy").getValue();
         if (bouncyMode) {
@@ -165,10 +168,11 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
                     if (ps.entity.hurtTime > 0) {
                         List<Identifier> textures = getSelectedTextures();
                         if (!textures.isEmpty()) {
-                            for (int j = 0; j < dmgCount.getValue(); j++) {
+                            int spawnCount = Math.max(1, Math.round(dmgCount.getValue() / 3.0f));
+                            for (int j = 0; j < spawnCount; j++) {
                                 ensureSpace();
                                 Identifier tex = textures.get(ThreadLocalRandom.current().nextInt(textures.size()));
-                                long lifeMs = (long) (lifeTimeSec.getValue() * 1000L);
+                                long lifeMs = Math.max(1L, (long) (lifeTimeSec.getValue() * 1000L / 3.0));
                                 Vec3d attackerEye2 = mc.player != null ? mc.player.getEyePos() : ps.impactPoint;
                                 Vec3d preferredDir2 = ps.impactPoint.subtract(attackerEye2);
                                 if (preferredDir2.lengthSquared() == 0) preferredDir2 = new Vec3d(0, 1, 0);
@@ -199,28 +203,22 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
         }
 
         Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
+        boolean hasStar = false, hasHeart = false, hasDollar = false, hasCircle = false, hasAmongus = false;
         for (int i = 0, size = particles.size(); i < size; i++) {
             Particle p = particles.get(i);
-            
-
-            p.updatePhysics();
-
-            
-
-            float f = Math.max(0f, 1 - ((now - p.spawnTime) / (float) p.lifeTime));
-            int alpha = (int) (255 * 0.8f * f);
-            if (alpha <= 0) continue;
-
-            
-            
-            float worldSize = dmgSize.getValue() * 0.04f * 0.3f * f;
-            // Live theme color each frame for gradient themes
-            Color themeColor = themeManager.getCurrentTheme().getBackgroundColor();
-            Color color = new Color(themeColor.getRed(), themeColor.getGreen(), themeColor.getBlue(), alpha);
-            Vec3d toCam = cameraPos.subtract(p.pos);
-            Vec3d renderPos = toCam.lengthSquared() > 0 ? p.pos.add(toCam.normalize().multiply(CAMERA_BIAS)) : p.pos;
-            Render3D.drawBillboardTexture(e.getMatrices(), renderPos, worldSize, p.tex, color);
+            p.updatePhysics(nowNanos);
+            if (STAR.equals(p.tex)) hasStar = true;
+            else if (HEART.equals(p.tex)) hasHeart = true;
+            else if (DOLLAR.equals(p.tex)) hasDollar = true;
+            else if (CIRCLE.equals(p.tex)) hasCircle = true;
+            else if (AMONGUS.equals(p.tex)) hasAmongus = true;
         }
+
+        if (hasStar) renderParticleBatchForTexture(e, now, cameraPos, STAR);
+        if (hasHeart) renderParticleBatchForTexture(e, now, cameraPos, HEART);
+        if (hasDollar) renderParticleBatchForTexture(e, now, cameraPos, DOLLAR);
+        if (hasCircle) renderParticleBatchForTexture(e, now, cameraPos, CIRCLE);
+        if (hasAmongus) renderParticleBatchForTexture(e, now, cameraPos, AMONGUS);
     }
 
     private void ensureSpace() {
@@ -229,6 +227,32 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
             int toRemove = size - maxParticles + 1;
             if (toRemove > 0) particles.subList(0, toRemove).clear();
         }
+    }
+
+    private void renderParticleBatchForTexture(EventRender3D.Game e, long now, Vec3d cameraPos, Identifier texture) {
+        Render3D.beginBillboardBatch(texture);
+        RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE);
+        Color themeColor = themeManager.getCurrentTheme().getBackgroundColor();
+        float sizeMul = dmgSize.getValue() * 0.04f * 0.3f;
+
+        for (int i = 0, size = particles.size(); i < size; i++) {
+            Particle p = particles.get(i);
+            if (!texture.equals(p.tex)) continue;
+
+            float life = Math.max(0f, 1 - ((now - p.spawnTime) / (float) p.lifeTime));
+            int alpha = (int) (255 * 0.8f * life);
+            if (alpha <= 0) continue;
+
+            float worldSize = sizeMul * life;
+            int glowAlpha = Math.max(0, Math.min(255, (int) (alpha * 0.85f)));
+            int rgba = new Color(themeColor.getRed(), themeColor.getGreen(), themeColor.getBlue(), glowAlpha).getRGB();
+
+            Vec3d toCam = cameraPos.subtract(p.pos);
+            Vec3d renderPos = toCam.lengthSquared() > 0 ? p.pos.add(toCam.normalize().multiply(CAMERA_BIAS)) : p.pos;
+            Render3D.batchBillboardRotated(e.getMatrices(), renderPos, worldSize * 1.15f, rgba, p.rotationDeg);
+        }
+
+        Render3D.endBillboardBatch();
     }
 
     private boolean isInView(Vec3d pos) {
@@ -332,8 +356,12 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
         int bounces = 0;
         final DamageParticles owner;
         final boolean legacy;
+        long lastUpdateNanos = -1L;
+        float rotationDeg;
+        float rotationSpeedDegPerSec;
 
-        Particle(DamageParticles owner, boolean legacy, Vec3d pos, Vec3d vel, Identifier tex, long lifeTime){
+        Particle(DamageParticles owner, boolean legacy, Vec3d pos, Vec3d vel, Identifier tex, long lifeTime,
+                 float rotationDeg, float rotationSpeedDegPerSec){
             this.owner = owner;
             this.legacy = legacy;
             this.pos = pos;
@@ -341,6 +369,8 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
             this.tex = tex;
             this.spawnTime = System.currentTimeMillis() - 30L;
             this.lifeTime = lifeTime;
+            this.rotationDeg = rotationDeg;
+            this.rotationSpeedDegPerSec = rotationSpeedDegPerSec;
         }
 
 		static Particle createDamage(DamageParticles owner, Vec3d pos, Identifier tex, long lifeTime, float scatter, Vec3d preferredDir) {
@@ -367,7 +397,10 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
 			double baseSpeed = ThreadLocalRandom.current().nextDouble(0.02, 0.25) * speedScale;
             Vec3d velocity = dir.multiply(baseSpeed * speedJitter);
 
-            return new Particle(owner, false, spawnPos, velocity, tex, lifeTime);
+            float rotation = ThreadLocalRandom.current().nextFloat() * 360.0f;
+            float rotationSpeed = (float) ThreadLocalRandom.current().nextDouble(8.0, 18.0);
+            if (ThreadLocalRandom.current().nextBoolean()) rotationSpeed = -rotationSpeed;
+            return new Particle(owner, false, spawnPos, velocity, tex, lifeTime, rotation, rotationSpeed);
         }
 
 		static Particle createLegacy(DamageParticles owner, Vec3d pos, Identifier tex, long lifeTime, float scatter) {
@@ -393,20 +426,42 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
 			double baseSpeed = ThreadLocalRandom.current().nextDouble(0.04, 0.12) * speedScale;
             Vec3d velocity = dir.multiply(baseSpeed * speedJitter);
 
-            return new Particle(owner, true, spawnPos, velocity, tex, lifeTime);
+            float rotation = ThreadLocalRandom.current().nextFloat() * 360.0f;
+            float rotationSpeed = (float) ThreadLocalRandom.current().nextDouble(8.0, 18.0);
+            if (ThreadLocalRandom.current().nextBoolean()) rotationSpeed = -rotationSpeed;
+            return new Particle(owner, true, spawnPos, velocity, tex, lifeTime, rotation, rotationSpeed);
         }
 
-        void updatePhysics() {
+        void updatePhysics(long nowNanos) {
+            // Time-based step (normalized to former 60 FPS frame logic).
+            double dtSeconds;
+            if (lastUpdateNanos <= 0L) {
+                dtSeconds = 1.0 / 60.0;
+            } else {
+                dtSeconds = (nowNanos - lastUpdateNanos) / 1_000_000_000.0;
+                if (dtSeconds < 0.0) dtSeconds = 0.0;
+                if (dtSeconds > 0.1) dtSeconds = 0.1; // clamp long pauses
+            }
+            lastUpdateNanos = nowNanos;
+
+            double frameScale = dtSeconds * 60.0;
+            if (frameScale <= 0.0) return;
+
+            rotationDeg += rotationSpeedDegPerSec * (float) dtSeconds;
+            if (rotationDeg >= 360.0f) rotationDeg -= 360.0f;
+            else if (rotationDeg < 0.0f) rotationDeg += 360.0f;
+
             
             double s = owner.animSpeed.getValue();
+            double stepScale = s * frameScale;
             double gravity = 0.00006;
-            velocityPhysics = velocityPhysics.subtract(0, gravity * s, 0);
+            velocityPhysics = velocityPhysics.subtract(0, gravity * stepScale, 0);
             if (velocityPhysics.y < -0.08) {
                 velocityPhysics = new Vec3d(velocityPhysics.x, -0.08, velocityPhysics.z);
             }
 
 			Vec3d prevPos = pos;
-			Vec3d step = velocityPhysics.multiply(s);
+			Vec3d step = velocityPhysics.multiply(stepScale);
 			Vec3d nextPos = pos.add(step);
 
 			
@@ -471,7 +526,7 @@ public class DamageParticles extends Module implements ThemeManager.ThemeChangeL
             } else {
                 pos = nextPos;
             }
-            double drag = Math.pow(0.998, s);
+            double drag = Math.pow(0.998, stepScale);
             velocityPhysics = velocityPhysics.multiply(drag);
         }
 

@@ -63,7 +63,7 @@ public class Watermark extends HudElement implements ThemeManager.ThemeChangeLis
 
             float textWidth = fontBold.getWidth(text, fontSize);
             float totalWidth = paddingX * 2 + textWidth;
-            float totalHeight = paddingY * 2 + fontSize;
+            float totalHeight = paddingY * 2 + fontSize - 8;
 
             setBounds(getX(), getY(), totalWidth, totalHeight);
 
@@ -76,7 +76,7 @@ public class Watermark extends HudElement implements ThemeManager.ThemeChangeLis
             );
 
             float textX = getX() + paddingX;
-            float textY = getY() + (totalHeight - fontSize) / 8 + fontSize * 0.75f;
+            float textY = getY() + (totalHeight - fontSize) / 8 + fontSize * 0.75f - 3;
 
             Render2D.drawFont(
                     matrices,

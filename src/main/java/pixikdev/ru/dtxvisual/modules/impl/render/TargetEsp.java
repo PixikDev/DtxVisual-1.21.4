@@ -14,7 +14,6 @@ import pixikdev.ru.dtxvisual.client.util.animations.Animation;
 import pixikdev.ru.dtxvisual.client.util.animations.Easing;
 import pixikdev.ru.dtxvisual.client.util.renderer.Render2D;
 import pixikdev.ru.dtxvisual.client.util.world.WorldUtils;
-import pixikdev.ru.dtxvisual.client.util.async.Async;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
@@ -409,7 +408,7 @@ public class TargetEsp extends Module implements ThemeManager.ThemeChangeListene
         e.getContext().getMatrices().push();
         e.getContext().getMatrices().translate(pos.getX(), pos.getY(), 0);
 
-        // Schedule math-only precompute for marker visuals (size, rotation, color) using snapshot data
+        // Precompute marker visuals inline (math-only, cheap) to avoid per-frame async task overhead.
         if (animVal > 0) {
             // compute maxSize using main-thread scale (MC camera dependent)
             float maxSize = (float) WorldUtils.getScale(centerWorld, BASE_SIZE * markerScale.getValue() * animVal);
@@ -429,27 +428,24 @@ public class TargetEsp extends Module implements ThemeManager.ThemeChangeListene
             }
             long lastHitSnapshot = lastHitTime;
             boolean hitFlashEnabled = markerHitFlash.getValue();
+            double dx = tx - px;
+            double dz = tz - pz;
+            double distance = Math.sqrt(dx * dx + dz * dz);
+            float finalSize = Math.max(maxSize - (float) distance, markerScaleVal);
+            double sin = Math.sin(System.currentTimeMillis() / 1000.0);
+            float rotationAngle = (float) (sin * 360);
 
-            Async.run(() -> {
-                double dx = tx - px;
-                double dz = tz - pz;
-                double distance = Math.sqrt(dx * dx + dz * dz);
-                float finalSize = Math.max(maxSize - (float) distance, markerScaleVal);
-                double sin = Math.sin(System.currentTimeMillis() / 1000.0);
-                float rotationAngle = (float) (sin * 360);
+            long now = System.currentTimeMillis();
+            float hitPhase = (hitFlashEnabled && now - lastHitSnapshot < HIT_FLASH_DURATION) ? 1f : 0f;
+            int fr = clamp255(baseR + (255 - baseR) * hitPhase);
+            int fg = clamp255(baseG + (0 - baseG) * hitPhase);
+            int fb = clamp255(baseB + (0 - baseB) * hitPhase);
+            int fa = clamp255(255 * animVal);
+            int rgba = (fa & 0xFF) << 24 | (fr & 0xFF) << 16 | (fg & 0xFF) << 8 | (fb & 0xFF);
 
-                long now = System.currentTimeMillis();
-                float hitPhase = (hitFlashEnabled && now - lastHitSnapshot < HIT_FLASH_DURATION) ? 1f : 0f;
-                int fr = clamp255(baseR + (255 - baseR) * hitPhase);
-                int fg = clamp255(baseG + (0 - baseG) * hitPhase);
-                int fb = clamp255(baseB + (0 - baseB) * hitPhase);
-                int fa = clamp255(255 * animVal);
-                int rgba = (fa & 0xFF) << 24 | (fr & 0xFF) << 16 | (fg & 0xFF) << 8 | (fb & 0xFF);
-
-                cachedFinalSize = finalSize;
-                cachedRotation = rotationAngle;
-                cachedColorRGBA = rgba;
-            });
+            cachedFinalSize = finalSize;
+            cachedRotation = rotationAngle;
+            cachedColorRGBA = rgba;
         }
 
         // Draw glow effect if enabled

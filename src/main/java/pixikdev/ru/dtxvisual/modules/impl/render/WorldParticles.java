@@ -1,5 +1,7 @@
 package pixikdev.ru.dtxvisual.modules.impl.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import pixikdev.ru.dtxvisual.DtxVisual;
 import pixikdev.ru.dtxvisual.client.events.impl.EventRender3D;
 import pixikdev.ru.dtxvisual.modules.api.Category;
@@ -68,6 +70,8 @@ public class WorldParticles extends Module implements ThemeManager.ThemeChangeLi
         });
 
         Render3D.beginBillboardBatch(GLOW);
+        // Batch is flushed in endBillboardBatch(), so additive blending must stay active for the whole batch.
+        RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE);
         for (Particle p : particles) {
             if (!isInFrustum(p.pos)) continue;
             renderParticle(p, e, now);
@@ -171,6 +175,7 @@ public class WorldParticles extends Module implements ThemeManager.ThemeChangeLi
             int rgbaWhite = new Color(255, 255, 255, whiteAlpha).getRGB();
             Render3D.batchBillboard(e.getMatrices(), p.pos, size * 0.5f, rgbaWhite);
         }
+
     }
 
     private boolean isVzletMode() {

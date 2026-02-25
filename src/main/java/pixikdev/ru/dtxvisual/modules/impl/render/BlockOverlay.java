@@ -221,7 +221,7 @@ public class BlockOverlay extends Module {
         float adjustedLineWidth = Math.max(0.5f, lineWidth * (float)(10.0 / Math.max(distance, 1.0)));
         
         
-        GL11.glLineWidth(adjustedLineWidth);
+        if (!Float.isFinite(adjustedLineWidth) || adjustedLineWidth <= 0f) adjustedLineWidth = 1.0f;
         
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
@@ -344,7 +344,7 @@ public class BlockOverlay extends Module {
         float adjustedLineWidth = Math.max(0.5f, lineWidth * (float)(10.0 / Math.max(distance, 1.0)));
         
         
-        GL11.glLineWidth(adjustedLineWidth);
+        if (!Float.isFinite(adjustedLineWidth) || adjustedLineWidth <= 0f) adjustedLineWidth = 1.0f;
         
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);

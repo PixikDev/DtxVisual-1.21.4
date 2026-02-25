@@ -97,16 +97,11 @@ public class Render3D implements Wrapper {
 		BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
 		for (VertexCollection collection : debugLines) collection.vertex(buffer);
 		RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-		GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-		GL11.glEnable(GL11.GL_LINE_SMOOTH);
-		GL11.glLineWidth(width);
 
 		
 		RenderSystem.disableDepthTest();
 		BufferRenderer.drawWithGlobalProgram(buffer.end());
 		RenderSystem.enableDepthTest();
-
-		GL11.glDisable(GL11.GL_LINE_SMOOTH);
 	}
 
 	public static void drawLinesWithDepth(List<VertexCollection> debugLines, float width) {
@@ -115,17 +110,12 @@ public class Render3D implements Wrapper {
 		BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
 		for (VertexCollection collection : debugLines) collection.vertex(buffer);
 		RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-		GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-		GL11.glEnable(GL11.GL_LINE_SMOOTH);
-		GL11.glLineWidth(width);
 
 		
 		RenderSystem.enableDepthTest();
 		RenderSystem.depthFunc(GL11.GL_LEQUAL);
 		RenderSystem.depthMask(true); 
 		BufferRenderer.drawWithGlobalProgram(buffer.end());
-
-		GL11.glDisable(GL11.GL_LINE_SMOOTH);
 	}
 
 	public static void drawQuadsWithDepth(List<VertexCollection> quads, boolean shine) {
@@ -294,13 +284,38 @@ public class Render3D implements Wrapper {
 	}
 
 	public static void batchBillboard(MatrixStack matrices, Vec3d worldPos, float size, int rgba) {
+		batchBillboardRotated(matrices, worldPos, size, rgba, 0.0f);
+	}
+
+	public static void batchBillboardRotated(MatrixStack matrices, Vec3d worldPos, float size, int rgba, float rotationDeg) {
 		if (!spriteBatchActive) return;
 		// compute billboard corners similar to drawBillboardTexture
 		Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
-		Vec3d toCamera = cameraPos.subtract(worldPos).normalize();
-		Vec3d worldUp = new Vec3d(0, 1, 0);
-		Vec3d right = worldUp.crossProduct(toCamera).normalize().multiply(size);
-		Vec3d up = toCamera.crossProduct(right).normalize().multiply(size);
+		Vec3d toCamera = cameraPos.subtract(worldPos);
+		if (toCamera.lengthSquared() < 1.0E-8) toCamera = new Vec3d(0, 0, 1);
+		else toCamera = toCamera.normalize();
+
+		// Build an orthonormal basis robustly to avoid zero-length cross products near vertical view vectors.
+		Vec3d upRef = Math.abs(toCamera.y) > 0.98 ? new Vec3d(1, 0, 0) : new Vec3d(0, 1, 0);
+		Vec3d right = upRef.crossProduct(toCamera);
+		if (right.lengthSquared() < 1.0E-8) right = new Vec3d(1, 0, 0);
+		else right = right.normalize();
+		Vec3d up = toCamera.crossProduct(right);
+		if (up.lengthSquared() < 1.0E-8) up = new Vec3d(0, 1, 0);
+		else up = up.normalize();
+
+		if (rotationDeg != 0.0f) {
+			double rad = Math.toRadians(rotationDeg);
+			double cos = Math.cos(rad);
+			double sin = Math.sin(rad);
+			Vec3d rotatedRight = right.multiply(cos).add(up.multiply(sin));
+			Vec3d rotatedUp = up.multiply(cos).subtract(right.multiply(sin));
+			right = rotatedRight;
+			up = rotatedUp;
+		}
+
+		right = right.multiply(size);
+		up = up.multiply(size);
 
 		Vec3d topLeft = worldPos.add(up).subtract(right);
 		Vec3d topRight = worldPos.add(up).add(right);
@@ -975,11 +990,7 @@ public class Render3D implements Wrapper {
 			BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
 			for (VertexCollection collection : debugLines) collection.vertex(buffer);
 			RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-			GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-			GL11.glEnable(GL11.GL_LINE_SMOOTH);
-			GL11.glLineWidth(DEBUG_LINE_WIDTH);
 			BufferRenderer.drawWithGlobalProgram(buffer.end());
-			GL11.glDisable(GL11.GL_LINE_SMOOTH);
 		}
 
 		RenderSystem.depthMask(true);
@@ -1011,11 +1022,7 @@ public class Render3D implements Wrapper {
 			BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
 			for (VertexCollection collection : debugLines) collection.vertex(buffer);
 			RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-			GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-			GL11.glEnable(GL11.GL_LINE_SMOOTH);
-			GL11.glLineWidth(DEBUG_LINE_WIDTH);
 			BufferRenderer.drawWithGlobalProgram(buffer.end());
-			GL11.glDisable(GL11.GL_LINE_SMOOTH);
 		}
 
 		RenderSystem.enableDepthTest();
@@ -1059,9 +1066,6 @@ public class Render3D implements Wrapper {
 				new Vertex(matrix, (float) s.x, (float) s.y, (float) s.z, color),
 				new Vertex(matrix, (float) e.x, (float) e.y, (float) e.z, color)
 		));
-
-		
-		GL11.glLineWidth(width);
 	}
 
 

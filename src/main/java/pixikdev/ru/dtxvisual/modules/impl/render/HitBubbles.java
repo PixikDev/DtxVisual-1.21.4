@@ -131,10 +131,7 @@ public class HitBubbles extends Module implements ThemeManager.ThemeChangeListen
             RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
             RenderSystem.setShaderTexture(0, bubbleTex);
             RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(
-                    GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA,
-                    GL11.GL_ONE, GL11.GL_ZERO
-            );
+            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
             RenderSystem.disableCull();
             RenderSystem.enableDepthTest();
             RenderSystem.depthFunc(GL11.GL_LEQUAL);
@@ -187,26 +184,21 @@ public class HitBubbles extends Module implements ThemeManager.ThemeChangeListen
             bottomRight = bottomRight.subtract(cameraPos);
             
             
-            Matrix4f matrix = e.getMatrices().peek().getPositionMatrix();
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder buffer = tessellator.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-            
             float red = drawColor.getRed() / 255.0f;
             float green = drawColor.getGreen() / 255.0f;
             float blue = drawColor.getBlue() / 255.0f;
             float alphaValue = drawColor.getAlpha() / 255.0f;
-            
-            
-            buffer.vertex(matrix, (float) bottomLeft.x, (float) bottomLeft.y, (float) bottomLeft.z)
-                    .texture(0.0f, 1.0f).color(red, green, blue, alphaValue);
-            buffer.vertex(matrix, (float) bottomRight.x, (float) bottomRight.y, (float) bottomRight.z)
-                    .texture(1.0f, 1.0f).color(red, green, blue, alphaValue);
-            buffer.vertex(matrix, (float) topRight.x, (float) topRight.y, (float) topRight.z)
-                    .texture(1.0f, 0.0f).color(red, green, blue, alphaValue);
-            buffer.vertex(matrix, (float) topLeft.x, (float) topLeft.y, (float) topLeft.z)
-                    .texture(0.0f, 0.0f).color(red, green, blue, alphaValue);
-            
-            BufferRenderer.drawWithGlobalProgram(buffer.end());
+
+            // Outer soft glow pass.
+            renderBubbleQuad(e, bottomLeft, bottomRight, topRight, topLeft, red, green, blue, alphaValue * 0.55f);
+
+            // Inner core pass.
+            double coreScale = 0.78;
+            Vec3d coreTopLeft = c.origin.add(scaledUp.multiply(coreScale)).subtract(scaledRight.multiply(coreScale)).subtract(cameraPos);
+            Vec3d coreTopRight = c.origin.add(scaledUp.multiply(coreScale)).add(scaledRight.multiply(coreScale)).subtract(cameraPos);
+            Vec3d coreBottomLeft = c.origin.subtract(scaledUp.multiply(coreScale)).subtract(scaledRight.multiply(coreScale)).subtract(cameraPos);
+            Vec3d coreBottomRight = c.origin.subtract(scaledUp.multiply(coreScale)).add(scaledRight.multiply(coreScale)).subtract(cameraPos);
+            renderBubbleQuad(e, coreBottomLeft, coreBottomRight, coreTopRight, coreTopLeft, red, green, blue, alphaValue);
             
             
             RenderSystem.enableCull();
@@ -222,6 +214,24 @@ public class HitBubbles extends Module implements ThemeManager.ThemeChangeListen
         Box bb = entity.getBoundingBox();
         Optional<Vec3d> res = bb.raycast(start, end);
         return res.orElse(null);
+    }
+
+    private void renderBubbleQuad(EventRender3D.Game e, Vec3d bottomLeft, Vec3d bottomRight, Vec3d topRight, Vec3d topLeft,
+                                  float red, float green, float blue, float alpha) {
+        Matrix4f matrix = e.getMatrices().peek().getPositionMatrix();
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+
+        buffer.vertex(matrix, (float) bottomLeft.x, (float) bottomLeft.y, (float) bottomLeft.z)
+                .texture(0.0f, 1.0f).color(red, green, blue, alpha);
+        buffer.vertex(matrix, (float) bottomRight.x, (float) bottomRight.y, (float) bottomRight.z)
+                .texture(1.0f, 1.0f).color(red, green, blue, alpha);
+        buffer.vertex(matrix, (float) topRight.x, (float) topRight.y, (float) topRight.z)
+                .texture(1.0f, 0.0f).color(red, green, blue, alpha);
+        buffer.vertex(matrix, (float) topLeft.x, (float) topLeft.y, (float) topLeft.z)
+                .texture(0.0f, 0.0f).color(red, green, blue, alpha);
+
+        BufferRenderer.drawWithGlobalProgram(buffer.end());
     }
 
     private static class HitCircle {

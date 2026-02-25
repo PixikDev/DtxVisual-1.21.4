@@ -1,15 +1,15 @@
 package pixikdev.ru.dtxvisual.modules.impl.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import pixikdev.ru.dtxvisual.client.events.impl.EventRender3D;
 import pixikdev.ru.dtxvisual.client.managers.ThemeManager;
+import pixikdev.ru.dtxvisual.client.util.renderer.Render3D;
 import pixikdev.ru.dtxvisual.modules.api.Category;
 import pixikdev.ru.dtxvisual.modules.api.Module;
 import pixikdev.ru.dtxvisual.modules.settings.impl.BooleanSetting;
 import pixikdev.ru.dtxvisual.modules.settings.impl.NumberSetting;
 import meteordevelopment.orbit.EventHandler;
 import org.jetbrains.annotations.NotNull;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.resource.language.I18n;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.render.*;
@@ -32,7 +32,6 @@ public class CustomHitBox extends Module implements ThemeManager.ThemeChangeList
     public @NotNull NumberSetting outlineAlpha = new NumberSetting("setting.outlineAlpha", 255, 0, 255, 1);
 
     private final ThemeManager themeManager;
-    private boolean prevRenderHitboxes;
 
     public CustomHitBox() {
         super("CustomHitBox", Category.Render, I18n.translate("module.customhitbox.description"));
@@ -45,9 +44,6 @@ public class CustomHitBox extends Module implements ThemeManager.ThemeChangeList
 
     @Override
     public void onEnable() {
-        EntityRenderDispatcher dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
-        this.prevRenderHitboxes = dispatcher.shouldRenderHitboxes();
-        dispatcher.setRenderHitboxes(true);
         super.onEnable();
     }
 
@@ -66,7 +62,8 @@ public class CustomHitBox extends Module implements ThemeManager.ThemeChangeList
         RenderSystem.depthMask(false);
         RenderSystem.disableCull();
         RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+        RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE);
 
         for (Entity entity : mc.world.getEntities()) {
             if (entity == mc.player) continue;
@@ -77,6 +74,7 @@ public class CustomHitBox extends Module implements ThemeManager.ThemeChangeList
             Box worldBox = entity.getBoundingBox().expand(0.002);
             Vec3d interpolatedPos = entity.getLerpedPos(tickDelta);
             Box interpolatedBox = worldBox.offset(interpolatedPos.subtract(entity.getPos()));
+            if (!isFiniteBox(interpolatedBox)) continue;
 
             Color theme = ThemeManager.getInstance().getCurrentTheme().getBackgroundColor();
 
@@ -97,6 +95,7 @@ public class CustomHitBox extends Module implements ThemeManager.ThemeChangeList
         if (!wasBlendEnabled) {
             RenderSystem.disableBlend();
         }
+
     }
 
     private void renderEntityBoxFill(MatrixStack matrices, Box box, Color color) {
@@ -159,7 +158,8 @@ public class CustomHitBox extends Module implements ThemeManager.ThemeChangeList
         Vec3d boxCenter = box.getCenter();
         double distance = camera.distanceTo(boxCenter);
         float adjustedLineWidth = Math.max(0.5f, lineWidth * (float) (10.0 / Math.max(distance, 1.0)));
-        GL11.glLineWidth(adjustedLineWidth);
+        if (!Float.isFinite(adjustedLineWidth)) adjustedLineWidth = 1.0f;
+        adjustedLineWidth = Math.min(adjustedLineWidth, 16.0f);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
@@ -218,10 +218,13 @@ public class CustomHitBox extends Module implements ThemeManager.ThemeChangeList
         RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         BufferRenderer.drawWithGlobalProgram(buffer.end());
     }
+
+    private boolean isFiniteBox(Box box) {
+        return Double.isFinite(box.minX) && Double.isFinite(box.minY) && Double.isFinite(box.minZ)
+                && Double.isFinite(box.maxX) && Double.isFinite(box.maxY) && Double.isFinite(box.maxZ);
+    }
     @Override
     public void onDisable() {
-        EntityRenderDispatcher dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
-        dispatcher.setRenderHitboxes(prevRenderHitboxes);
         super.onDisable();
     }
 }

@@ -30,12 +30,16 @@ public abstract class EntityRenderDispatcherMixin {
                                                              CallbackInfo ci) {
         CustomHitBox module = DtxVisual.getInstance().getModuleManager().getModule(CustomHitBox.class);
         if (module == null || !module.isToggled()) return;
+        // Never interfere outside the active world 3D render pass (e.g. preview contexts).
+        if (!Render3D.rendering) return;
 
-        // Cancel vanilla hitbox drawing
+        MinecraftClient mc = MinecraftClient.getInstance();
+        if (mc.world == null || mc.worldRenderer == null || entity == null || entity.getWorld() != mc.world) return;
+
+        // Cancel vanilla hitbox drawing only in valid world render context.
         ci.cancel();
 
         // Frustum cull: render only if entity is in view
-        MinecraftClient mc = MinecraftClient.getInstance();
         float tickDelta = mc.getRenderTickCounter().getTickDelta(true);
         Box worldBox = entity.getBoundingBox().expand(0.0020000000949949026);
         

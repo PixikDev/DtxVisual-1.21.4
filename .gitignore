@@ -9,3 +9,5 @@ out
 .zencoder
 /.gradle/
 /build/
+.gradle-home/wrapper/dists/gradle-8.14-bin/38aieal9i53h9rfe7vjup95b9/gradle-8.14-bin.zip.part
+.gradle-home/wrapper/dists/gradle-8.14-bin/38aieal9i53h9rfe7vjup95b9/gradle-8.14-bin.zip.lck
